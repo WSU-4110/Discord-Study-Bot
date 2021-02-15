@@ -26,6 +26,14 @@ class TimedCommands(commands.Cog, name="Timed Commands"):
         top_timer = config.timer_pqueue.peek()
         await ctx.send(repr(top_timer))
 
+    @commands.command(name="timer-queue", aliases=['tq'])
+    async def timer_queue(self, ctx):
+        await ctx.send(repr(config.timer_pqueue.get_all_tasks()))
+
+    @commands.command(name="unset-timer", aliases=['ut'])
+    async def unset_timer(self, ctx, idx: str):
+        pass
+
     # *** commands end above ***
 
 

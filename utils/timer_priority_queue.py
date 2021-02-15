@@ -13,7 +13,10 @@ class TimerPriorityQueue(PriorityQueue):
         self.alarm_map[a_time.end_time] += 1
         self.put(a_time)
 
-    def get_task(self):
+    def remove_task(self, task_id):
+        pass
+
+    def get_top_task(self):
         top_item = self.get()
         return top_item
 
@@ -25,6 +28,12 @@ class TimerPriorityQueue(PriorityQueue):
             if reinsert:
                 self.put(top_item)
             return top_item
+
+    def get_all_tasks(self):
+        return self.alarm_map
+
+    def get_tasks_by_user(self, user_id):
+        pass
 
     def __len__(self):
         return self.qsize()
