@@ -41,6 +41,17 @@ class Timer:
     def embed_repr(self):
         pass
 
+    def __lt__(self, obj):
+        """self < obj."""
+        return self.end_time < obj.end_time
 
-t = Timer('12345', 1, 'Hello')
-print(t)
+    def __gt__(self, obj):
+        """self > obj."""
+        return self.end_time > obj.end_time
+
+    def __cmp__(self, other):
+        if self > other:
+            return 1
+        if self < other:
+            return -1
+        return 0

@@ -127,3 +127,10 @@ dmypy.json
 
 # Pyre type checker
 .pyre/
+
+# IDE specific files
+.idea/
+.vscode/
+
+# env
+env
