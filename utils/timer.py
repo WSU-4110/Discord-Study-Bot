@@ -13,7 +13,7 @@ class Timer:
         return f"Timer (User: {self.userid}) " \
                f"[ {self.end_time} | \"{self.msg}\" " \
                f"| Created at {self.start_time} " \
-               f"| With {self.time_remaining()} time remaining]"
+               f"| With {self.time_remaining()} time remaining ]"
 
     @property
     def userid(self):
