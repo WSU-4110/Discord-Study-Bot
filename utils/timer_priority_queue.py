@@ -27,6 +27,7 @@ class TimerPriorityQueue(PriorityQueue):
             return top_item
 
 
+'''
 pq = TimerPriorityQueue()
 t = timer.Timer('12345', 5, 'Hello')
 t2 = timer.Timer('23456', 1, 'Hello 2')
@@ -34,3 +35,4 @@ pq.add_task(t)
 pq.add_task(t2)
 for i in range(10):
     print(pq.peek())
+'''
