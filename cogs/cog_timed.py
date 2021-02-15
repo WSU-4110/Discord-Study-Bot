@@ -1,6 +1,6 @@
 import discord
 from discord.ext import commands
-from utils import timer, config
+from utils import timer, config, async_tasks
 
 
 class TimedCommands(commands.Cog, name="Timed Commands"):
@@ -18,6 +18,7 @@ class TimedCommands(commands.Cog, name="Timed Commands"):
         timer_obj = timer.Timer(userid=userid, initial_time=int(time), msg=msg)
         config.timer_pqueue.add_task(timer_obj)
         await ctx.send("Timer created!")
+        await async_tasks.handle_timers()
 
     @commands.command(name="get-highest-timer", aliases=['ght'])
     async def highest_timer(self, ctx):

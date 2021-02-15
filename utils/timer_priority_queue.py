@@ -26,6 +26,9 @@ class TimerPriorityQueue(PriorityQueue):
                 self.put(top_item)
             return top_item
 
+    def __len__(self):
+        return self.qsize()
+
 
 '''
 pq = TimerPriorityQueue()
