@@ -11,18 +11,26 @@ class TimerPriorityQueue(PriorityQueue):
 
     def add_task(self, a_time: timer.Timer):
         self.alarm_map[a_time.end_time] += 1
+        self.put(a_time)
 
-    def peek(self):
-        if not self.empty():
+    def get_task(self):
+        top_item = self.get()
+        return top_item
+
+    def peek(self, reinsert=True):
+        if self.empty():
             pass
         else:
-            return None
+            top_item = self.get()
+            if reinsert:
+                self.put(top_item)
+            return top_item
 
 
 pq = TimerPriorityQueue()
-t = timer.Timer('12345', 1, 'Hello')
-t2 = timer.Timer('23456', 5, 'Hello 2')
-pq.put(t)
-pq.put(t2)
+t = timer.Timer('12345', 5, 'Hello')
+t2 = timer.Timer('23456', 1, 'Hello 2')
+pq.add_task(t)
+pq.add_task(t2)
 for i in range(10):
-    print(pq.get())
+    print(pq.peek())
