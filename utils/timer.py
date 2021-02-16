@@ -3,10 +3,10 @@ from datetime import timedelta as td
 
 
 class Timer:
-    def __init__(self, userid: str, initial_time: int, msg: str):
+    def __init__(self, userid: str, time_delta_mins: int, msg: str):
         self._userid = userid
         self._start_time = dt.datetime.now()
-        self._end_time = self.start_time + td(minutes=initial_time)
+        self._end_time = self.start_time + td(minutes=time_delta_mins)
         self._msg = msg
 
     def __repr__(self):
