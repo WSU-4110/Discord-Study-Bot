@@ -3,11 +3,12 @@ from datetime import timedelta as td
 
 
 class Timer:
-    def __init__(self, userid: str, time_delta_mins: int, msg: str):
+    def __init__(self, userid: str, time_delta_mins: int, msg: str, discord_message):
         self._userid = userid
         self._start_time = dt.datetime.now()
         self._end_time = self.start_time + td(minutes=time_delta_mins)
         self._msg = msg
+        self._discord_message = discord_message
 
     def __repr__(self):
         return f"Timer (User: {self.userid}) " \
@@ -34,6 +35,10 @@ class Timer:
     @msg.setter
     def msg(self, new_msg):
         self._msg = new_msg
+
+    @property
+    def discord_message(self):
+        return self._discord_message
 
     def time_remaining(self):
         return self.end_time - dt.datetime.now()

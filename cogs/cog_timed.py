@@ -15,7 +15,7 @@ class TimedCommands(commands.Cog, name="Timed Commands"):
     async def set_timer(self, ctx, time: str, *msg: str):
         userid = ctx.message.author.id
         msg = ' '.join(msg)
-        timer_obj = timer.Timer(userid=userid, initial_time=int(time), msg=msg)
+        timer_obj = timer.Timer(userid=userid, time_delta_mins=int(time), msg=msg, discord_message=ctx.message)
         config.timer_pqueue.add_task(timer_obj)
         await ctx.send("Timer created!")
         await async_tasks.handle_timers()

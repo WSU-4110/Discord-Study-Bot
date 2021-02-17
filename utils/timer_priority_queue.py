@@ -8,32 +8,39 @@ class TimerPriorityQueue(PriorityQueue):
     def __init__(self):
         super().__init__()
         self.alarm_map = Counter()
+        self.user_map = {}
 
     def add_task(self, a_time: timer.Timer):
         self.alarm_map[a_time.end_time] += 1
+        if a_time.userid not in self.user_map.keys():
+            self.user_map[a_time.userid] = []
+        self.user_map[a_time.userid].append(a_time)
         self.put(a_time)
 
-    def remove_task(self, task_id):
-        pass
+    def get_all_tasks_to_fire(self):
+        tasks_arr = []
+        num_items = self.alarm_map[self.peek().end_time]
+        for i in range(num_items):
+            tasks_arr.append(self.get_top_task())
+        return tasks_arr
 
     def get_top_task(self):
         top_item = self.get()
         return top_item
 
-    def peek(self, reinsert=True):
+    def peek(self):
         if self.empty():
             pass
         else:
             top_item = self.get()
-            if reinsert:
-                self.put(top_item)
+            self.put(top_item)
             return top_item
 
     def get_all_tasks(self):
         return self.alarm_map
 
     def get_tasks_by_user(self, user_id):
-        pass
+        return self.user_map[user_id]
 
     def __len__(self):
         return self.qsize()
