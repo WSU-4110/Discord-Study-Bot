@@ -14,7 +14,10 @@ async def on_ready():  # When the bot is ready
 
 
 extensions = [
-	'cogs.cog_example'  # Same name as it would be if you were importing it
+	'cogs.cog_example',  # Same name as it would be if you were importing it
+	'cogs.cog_noted',
+	'cogs.cog_reminders',
+	'cogs.cog_timed'
 ]
 
 if __name__ == '__main__':  # Ensures this is the file being ran
