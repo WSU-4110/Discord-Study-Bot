@@ -40,6 +40,10 @@ class Timer:
     def discord_message(self):
         return self._discord_message
 
+    def formatted_discord_message(self):
+        return f"{self.discord_message.author.mention} Your timer for {str(self.end_time)} has finished. " \
+               f"'Here's your initial message: {self.msg}"
+
     def time_remaining(self):
         return self.end_time - dt.datetime.now()
 
