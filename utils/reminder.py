@@ -1,11 +1,13 @@
 from utils import timer
 from datetime import timedelta as td
 import datetime as dt
+import pytz as tz
 
 
 class Reminder(timer.Timer):
     def __init__(self, userid: str, msg: str, discord_message, day: str, hour: int, minute: int):
-        self._today = dt.datetime.now()
+        EST = tz.timezone('EST')
+        self._today = dt.datetime.now(EST)
         self._current_year = self._today.year
         self._hour = hour
         self._minute = minute
