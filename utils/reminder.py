@@ -1,13 +1,13 @@
 from utils import timer
 from datetime import timedelta as td
 import datetime as dt
-import pytz as tz
+import pytz
+import timeutils
 
 
 class Reminder(timer.Timer):
-    def __init__(self, userid: str, msg: str, discord_message, day: str, hour: int, minute: int):
-        EST = tz.timezone('EST')
-        self._today = dt.datetime.now(EST)
+    def __init__(self, userid: str, msg: str, discord_message, day: str, hour: int, minute: int, tz='EST'):
+        self._today = dt.datetime.utcnow()
         self._current_year = self._today.year
         self._hour = hour
         self._minute = minute
@@ -16,27 +16,32 @@ class Reminder(timer.Timer):
         self._month = self._next_date.month
 
         #  creates reminder notification time object
-        deadline_date = dt.datetime(self._current_year, self._month, self._day, self._hour, self._minute)
-        minutes = (deadline_date - self._today).total_seconds() / 60  # convert deadline_date to minutes
+
+        deadline_date = timeutils.orig_to_utc(
+            dt.datetime(self._current_year, self._month, self._day, self._hour, self._minute), orig=tz)
+        minutes = (deadline_date - self._today).total_seconds() // 60  # convert deadline_date to minutes
 
         super().__init__(userid, minutes, msg, discord_message)
 
     def get_next_reminder_date(self, day):
-        day = day.upper()
-        if (day == "M"):
-            day_of_week = 0
-        elif (day == "T"):
-            day_of_week = 1
-        elif (day == "W"):
-            day_of_week = 2
-        elif (day == "TH"):
-            day_of_week = 3
-        elif (day == "F"):
-            day_of_week = 4
-        elif (day == "SAT"):
-            day_of_week = 5
-        elif (day == "SUN"):
-            day_of_week = 6
+        # day = day.upper()
+        # if (day == "M"):
+        #     day_of_week = 0
+        # elif (day == "T"):
+        #     day_of_week = 1
+        # elif (day == "W"):
+        #     day_of_week = 2
+        # elif (day == "TH"):
+        #     day_of_week = 3
+        # elif (day == "F"):
+        #     day_of_week = 4
+        # elif (day == "SAT"):
+        #     day_of_week = 5
+        # elif (day == "SUN"):
+        #     day_of_week = 6
+
+        day_to_i = {d: i for i, d in enumerate(['m', 't', 'w', 'th', 'f', 's', 'su'])}
+        day_of_week = day_to_i[day.lower()]
 
         next_date = self._today + td(days=-self._today.weekday() + day_of_week, weeks=0)
 
