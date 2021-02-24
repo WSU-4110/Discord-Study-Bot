@@ -11,14 +11,14 @@ class NotesCommands(commands.Cog, name="Notes Commands"):
 
     # *** commands begin below ***
 
-    @commands.command(name="create-note", aliases=["cn"])
+    @commands.command(name="create-note", aliases=["cn"])  # command to create a note
     async def create_note(self, ctx, *msg: str):
         userid = ctx.message.author.id
         note = notes.Note(userid, ' '.join(msg))
         cfg.note_dict[userid].append(note)
         await ctx.send(f"Note created at {note.time_stamp}!")
 
-    @commands.command(name="list-notes", aliases=["ln"])
+    @commands.command(name="list-notes", aliases=["ln"])  # command to list notes
     async def list_notes(self, ctx):
         userid = ctx.message.author.id
         for note in cfg.note_dict[userid]:
