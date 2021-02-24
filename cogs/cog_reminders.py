@@ -1,6 +1,6 @@
 import discord
 from discord.ext import commands
-from utils import config, async_tasks, reminder
+from utils import config, async_tasks, reminder, timeutils
 
 
 class ReminderCommands(commands.Cog, name="Reminder Commands"):
@@ -11,6 +11,7 @@ class ReminderCommands(commands.Cog, name="Reminder Commands"):
 
     @commands.command(name="set-reminder", aliases=["sr"])
     async def set_reminder(self, ctx, day: str, hour: int, minute: int, *msg: str):
+        '''Grabs user reminder data and pushes it to the time priority que'''
         userid = ctx.message.author.id
         if tz := msg[0] in timeutils.tz_map:
             msg_str = ' '.join(msg[1:])
