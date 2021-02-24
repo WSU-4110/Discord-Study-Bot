@@ -1,8 +1,7 @@
-from utils import timer
+from utils import timer, timeutils
 from datetime import timedelta as td
 import datetime as dt
 import pytz
-import timeutils
 
 
 class Reminder(timer.Timer):
