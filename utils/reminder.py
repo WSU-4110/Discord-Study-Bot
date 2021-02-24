@@ -7,6 +7,7 @@ import timeutils
 
 class Reminder(timer.Timer):
     def __init__(self, userid: str, msg: str, discord_message, day: str, hour: int, minute: int, tz='EST'):
+        '''Constructor sets up attributes and prepares deadline'''
         self._today = dt.datetime.utcnow()
         self._current_year = self._today.year
         self._hour = hour
@@ -16,7 +17,6 @@ class Reminder(timer.Timer):
         self._month = self._next_date.month
 
         #  creates reminder notification time object
-
         deadline_date = timeutils.orig_to_utc(
             dt.datetime(self._current_year, self._month, self._day, self._hour, self._minute), orig=tz)
         minutes = (deadline_date - self._today).total_seconds() // 60  # convert deadline_date to minutes
@@ -24,22 +24,7 @@ class Reminder(timer.Timer):
         super().__init__(userid, minutes, msg, discord_message)
 
     def get_next_reminder_date(self, day):
-        # day = day.upper()
-        # if (day == "M"):
-        #     day_of_week = 0
-        # elif (day == "T"):
-        #     day_of_week = 1
-        # elif (day == "W"):
-        #     day_of_week = 2
-        # elif (day == "TH"):
-        #     day_of_week = 3
-        # elif (day == "F"):
-        #     day_of_week = 4
-        # elif (day == "SAT"):
-        #     day_of_week = 5
-        # elif (day == "SUN"):
-        #     day_of_week = 6
-
+        '''calculates the reminder date from day of week'''
         day_to_i = {d: i for i, d in enumerate(['m', 't', 'w', 'th', 'f', 's', 'su'])}
         day_of_week = day_to_i[day.lower()]
 
@@ -51,5 +36,6 @@ class Reminder(timer.Timer):
         return next_date
 
     def formatted_discord_message(self):
+        '''The message that is sent to the user on timer event'''
         return f"{self.discord_message.author.mention} Your reminder for {str(self.end_time)} has finished. " \
                f"'Here's your initial message: {self.msg}"
