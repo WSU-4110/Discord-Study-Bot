@@ -1,12 +1,16 @@
 import datetime as dt
 from datetime import timedelta as td
+from utils import timeutils
 
 
 class Timer:
-    def __init__(self, userid: str, time_delta_mins: int, msg: str, discord_message):
+    def __init__(self, userid: str, time_delta_mins: int, msg: str, discord_message, include_seconds=False):
         self._userid = userid
-        self._start_time = dt.datetime.now()
+        self._start_time = dt.datetime.utcnow()
         self._end_time = self.start_time + td(minutes=time_delta_mins)
+        if not include_seconds:
+            self._start_time = timeutils.str_to_datetime(self._start_time.strftime("%Y-%m-%d %H:%M"))
+            self._end_time = timeutils.str_to_datetime(self._end_time.strftime("%Y-%m-%d %H:%M"))
         self._msg = msg
         self._discord_message = discord_message
 
@@ -42,10 +46,10 @@ class Timer:
 
     def formatted_discord_message(self):
         return f"{self.discord_message.author.mention} Your timer for {str(self.end_time)} has finished. " \
-               f"'Here's your initial message: {self.msg}"
+               f"Here's your initial message: {self.msg}"
 
     def time_remaining(self):
-        return self.end_time - dt.datetime.now()
+        return self.end_time - dt.datetime.utcnow()
 
     def embed_repr(self):
         pass
