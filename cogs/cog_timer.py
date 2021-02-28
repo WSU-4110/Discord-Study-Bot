@@ -1,6 +1,7 @@
 import discord
 from discord.ext import commands
-from utils import timer, config, async_tasks
+from utils import config, async_tasks
+from models import timer
 
 
 class TimedCommands(commands.Cog, name="Timed Commands"):
@@ -21,7 +22,6 @@ class TimedCommands(commands.Cog, name="Timed Commands"):
 
         # P-queue update
         config.timer_pqueue.add_task(timer_obj)
-
         await ctx.send("Timer created!")
         await async_tasks.handle_timers()
 
