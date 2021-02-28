@@ -1,6 +1,7 @@
 import discord
 from discord.ext import commands
-from utils import notes, config as cfg
+from utils import config as cfg
+from models import note
 
 
 class NotesCommands(commands.Cog, name="Notes Commands"):
@@ -14,7 +15,7 @@ class NotesCommands(commands.Cog, name="Notes Commands"):
     @commands.command(name="create-note", aliases=["cn"])  # command to create a note
     async def create_note(self, ctx, *msg: str):
         userid = ctx.message.author.id
-        note = notes.Note(userid, ' '.join(msg))
+        note = note.Note(userid, ' '.join(msg))
         cfg.note_dict[userid].append(note)
         await ctx.send(f"Note created at {note.time_stamp}!")
 

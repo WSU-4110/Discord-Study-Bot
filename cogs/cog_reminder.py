@@ -1,6 +1,7 @@
 import discord
 from discord.ext import commands
-from utils import config, async_tasks, reminder, timeutils
+from utils import config, async_tasks, timeutils
+from models import reminder
 
 
 class ReminderCommands(commands.Cog, name="Reminder Commands"):

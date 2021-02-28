@@ -1,4 +1,4 @@
-from utils import timer
+from models import timer
 from queue import PriorityQueue
 import heapq
 from collections import Counter
