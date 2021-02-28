@@ -1,4 +1,5 @@
-from utils import timer, timeutils
+from utils import timeutils
+from models import timer
 from datetime import timedelta as td
 import datetime as dt
 import pytz
