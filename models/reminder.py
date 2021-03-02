@@ -21,7 +21,7 @@ class Reminder(timer.Timer):
             dt.datetime(self._current_year, self._month, self._day, self._hour, self._minute), orig=tz)
         minutes = (deadline_date - self._today).total_seconds() // 60  # convert deadline_date to minutes
 
-        super().__init__(userid, minutes, msg, discord_message,True)
+        super().__init__(userid, minutes, msg, discord_message, False)
 
     def get_next_reminder_date(self, day):
         """calculates the reminder date from day of week"""
