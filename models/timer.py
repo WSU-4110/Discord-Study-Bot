@@ -5,7 +5,7 @@ from utils import timeutils, database_utils
 
 
 class Timer(base_db_model.BaseDBModel):
-    def __init__(self, userid: str, time_delta_mins: int, msg: str, discord_message, include_seconds=False):
+    def __init__(self, userid: str, time_delta_mins: int, msg: str, discord_message, include_seconds=True):
         """ Initialize attributes of Timer instance. """
 
         self._userid = userid
@@ -18,7 +18,6 @@ class Timer(base_db_model.BaseDBModel):
         self._discord_message = discord_message  # message object
         self.message_id = self._discord_message.id
         self.channel_id = self._discord_message.channel.id
-        self.insert(['message_id', 'userid', 'channel_id', 'start_time', 'end_time', 'msg'])
 
     def __repr__(self):
         """ Get string representation of Timer instance information. """
