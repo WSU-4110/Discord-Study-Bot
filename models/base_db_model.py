@@ -4,15 +4,20 @@ from utils import database_utils
 
 class BaseDBModel(ABC):
     """ Database functions for objects """
+
     def insert(self, attribute_list):
         """ inserts object into MYSQL db given a list of attributes"""
         table_name = self.get_table_name()
         attribute_map = {}
+
+        #  grabs values from local object given the variable names
         for attribute in attribute_list:
             attribute_map[attribute] = getattr(locals()['self'], attribute)
 
         #  determine the number of parameters that need to be passed into the parameterized query
         amount_of_params = ", ".join((('%s, ') * len(attribute_map.values())).split(',')[:-1])
+
+        #  generates parameterized INSERT query depending on the local object and variable names in attribute_list
         sql_query = f"INSERT INTO {table_name} VALUES ("
         for value in attribute_map.values():
             if type(value) is not int:
