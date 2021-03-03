@@ -20,6 +20,9 @@ class ReminderCommands(commands.Cog, name="Reminder Commands"):
         else:
             msg_str = ' '.join(msg)
             reminder_obj = reminder.Reminder(userid, msg_str, ctx.message, day, hour, minute)
+
+        reminder_obj.insert(['message_id', 'userid', 'channel_id', 'start_time', 'end_time', 'msg'])
+
         config.timer_pqueue.add_task(reminder_obj)
         await ctx.send("Reminder created!")
         await async_tasks.handle_timers()
