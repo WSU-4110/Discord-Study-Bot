@@ -15,15 +15,15 @@ class NotesCommands(commands.Cog, name="Notes Commands"):
     @commands.command(name="create-note", aliases=["cn"])  # command to create a note
     async def create_note(self, ctx, *msg: str):
         userid = ctx.message.author.id
-        note = note.Note(userid, ' '.join(msg))
+        singular_note = note.Note(userid, ' '.join(msg))
         cfg.note_dict[userid].append(note)
-        await ctx.send(f"Note created at {note.time_stamp}!")
+        await ctx.send(f"Note created at {singular_note.time_stamp}!")
 
     @commands.command(name="list-notes", aliases=["ln"])  # command to list notes
     async def list_notes(self, ctx):
         userid = ctx.message.author.id
-        for note in cfg.note_dict[userid]:
-            message = await ctx.send(f"{note}")
+        for singular_note in cfg.note_dict[userid]:
+            message = await ctx.send(f"{singular_note}")
             #await message.add_reaction("❌")
 
     # *** commands end above ***
