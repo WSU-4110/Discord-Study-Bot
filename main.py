@@ -32,6 +32,7 @@ async def on_ready():  # When the bot is ready
     await reinit_queue()
     await async_tasks.handle_timers()
 
+	
 extensions = [
 	'cogs.cog_example',  # Same name as it would be if you were importing it
 	'cogs.cog_note',
