@@ -25,7 +25,7 @@ class TimedCommands(commands.Cog, name="Timed Commands"):
         timer_obj.insert(['message_id', 'userid', 'channel_id', 'start_time', 'end_time', 'msg'])
 
         await ctx.send("Timer created!")
-        await async_tasks.handle_timers()
+        # await async_tasks.handle_timers()
 
     @commands.command(name="get-highest-timer", aliases=['ght'])
     async def highest_timer(self, ctx):
