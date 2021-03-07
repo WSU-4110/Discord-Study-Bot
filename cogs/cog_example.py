@@ -3,25 +3,25 @@ from discord.ext import commands
 
 
 class DevCommands(commands.Cog, name='Developer Commands'):
-	'''These are the developer commands'''
+	"""These are the developer commands"""
 
 	def __init__(self, bot):
 		self.bot = bot
 
-	async def cog_check(self, ctx):  
-		'''
+	async def cog_check(self, ctx):
+		"""
 		The default check for this cog whenever a command is used. Returns True if the command is allowed.
-		'''
-		return ctx.author.id == self.bot.author_id
+		"""
+		return ctx.author.id in self.bot.author_ids
 
 	@commands.command(  # Decorator to declare where a command is.
 		name='reload',  # Name of the command, defaults to function name.
 		aliases=['rl']  # Aliases for the command.
 	)  
 	async def reload(self, ctx, cog):
-		'''
+		"""
 		Reloads a cog.
-		'''
+		"""
 		extensions = self.bot.extensions  # A list of the bot's cogs/extensions.
 		if cog == 'all':  # Lets you reload all cogs at once
 			for extension in extensions:
@@ -37,9 +37,9 @@ class DevCommands(commands.Cog, name='Developer Commands'):
 	
 	@commands.command(name="unload", aliases=['ul']) 
 	async def unload(self, ctx, cog):
-		'''
+		"""
 		Unload a cog.
-		'''
+		"""
 		extensions = self.bot.extensions
 		if cog not in extensions:
 			await ctx.send("Cog is not loaded!")
@@ -49,9 +49,9 @@ class DevCommands(commands.Cog, name='Developer Commands'):
 	
 	@commands.command(name="load")
 	async def load(self, ctx, cog):
-		'''
+		"""
 		Loads a cog.
-		'''
+		"""
 		try:
 
 			self.bot.load_extension(cog)
@@ -62,9 +62,9 @@ class DevCommands(commands.Cog, name='Developer Commands'):
 
 	@commands.command(name="listcogs", aliases=['lc'])
 	async def listcogs(self, ctx):
-		'''
+		"""
 		Returns a list of all enabled commands.
-		'''
+		"""
 		base_string = "```css\n"  # Gives some styling to the list (on pc side)
 		base_string += "\n".join([str(cog) for cog in self.bot.extensions])
 		base_string += "\n```"
