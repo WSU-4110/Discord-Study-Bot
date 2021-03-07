@@ -12,6 +12,7 @@ st.setup(
     install_requires=[
         'discord.py',
         'mysql-connector-python',
-        'python-dotenv'
+        'python-dotenv',
+        'duckpy',
     ]
 )

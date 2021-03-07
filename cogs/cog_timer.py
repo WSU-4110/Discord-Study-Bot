@@ -35,6 +35,15 @@ class TimedCommands(commands.Cog, name="Timed Commands"):
         top_timer = config.timer_pqueue.peek()
         await ctx.send(repr(top_timer))
 
+    @commands.command(name="delete-highest-timer", aliases=['dht'])
+    async def delete_highest_timer(self, ctx):
+        """ Sends Timer information for nearest pending Timer instance. """
+
+        userid = ctx.message.author.id
+        top_timer = config.timer_pqueue.peek()
+        removed_top_timer = config.timer_pqueue.remove_timer(top_timer.message_id)
+        await ctx.send(repr(removed_top_timer))
+
     @commands.command(name="timer-queue", aliases=['tq'])
     async def timer_queue(self, ctx):
         """ Sends information for all pending Timer instances. """

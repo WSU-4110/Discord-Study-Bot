@@ -50,19 +50,20 @@ class TimerPriorityQueue(PriorityQueue):
         """Function to get the Counter object to retrieve all the timer-derived objects for a given user"""
         return self.user_map[user_id]
 
-    def remove_timer(self, user_id, message_id):
+    def remove_timer(self, message_id):
         items_to_reinsert = []
-        a_timer = None
+        a_time = None
         while True:
-            a_timer = self.get()
-            if a_timer.message_id == message_id:
-                self.user_map[user_id].remove(a_timer)
+            a_time = self.get()
+            if a_time.message_id == message_id:
+                self.user_map[a_time.userid].remove(a_time)
+                self.alarm_map[a_time.end_time] -= 1
                 break
             else:
-                items_to_reinsert.append(a_timer)
+                items_to_reinsert.append(a_time)
         for item in items_to_reinsert:
             self.put(item)
-        return a_timer
+        return a_time
 
     def __len__(self):
         """Function to get the size of this queue"""
