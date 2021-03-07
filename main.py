@@ -10,13 +10,6 @@ bot = commands.Bot(
 	case_insensitive=True  # Commands aren't case-sensitive
 )
 
-bot.author_ids = [189533543993442304,
-                  154752622262353921,
-                  667203504196026422,
-                  359496559773351936,
-                  487272627006734339]
-
-
 async def reinit_queue():
 	timers = database_utils.exec("SELECT * FROM TIMERS")
 	for t in timers:

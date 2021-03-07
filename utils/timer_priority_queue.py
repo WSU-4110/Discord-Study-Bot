@@ -48,6 +48,20 @@ class TimerPriorityQueue(PriorityQueue):
     def get_tasks_by_user(self, user_id):
         """Function to get the Counter object to retrieve all the timer-derived objects for a given user"""
         return self.user_map[user_id]
+    
+    def remove_timer(self, user_id, message_id):
+        items_to_reinsert = []
+        a_timer = None
+        while True:
+            a_timer = self.get()
+            if a_timer.message_id == message_id:
+                self.user_map[user_id].remove(a_timer)
+                break
+            else:
+                items_to_reinsert.append(a_timer)
+         for item in items_to_reinsert:
+            self.put(item)
+         return a_timer
 
     def __len__(self):
         """Function to get the size of this queue"""
