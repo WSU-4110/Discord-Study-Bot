@@ -5,6 +5,13 @@ from keep_alive import keep_alive
 from discord.ext import commands
 from utils import database_utils, async_tasks, config
 
+bot.author_ids = [189533543993442304,
+                  154752622262353921,
+                  667203504196026422,
+                  359496559773351936,
+                  487272627006734339]
+
+
 bot = commands.Bot(
 	command_prefix="!",  # Change to desired prefix
 	case_insensitive=True  # Commands aren't case-sensitive
@@ -37,7 +44,8 @@ extensions = [
 	'cogs.cog_example',  # Same name as it would be if you were importing it
 	'cogs.cog_note',
 	'cogs.cog_reminder',
-	'cogs.cog_timer'
+	'cogs.cog_timer',
+    	'cogs.cog_search'
 ]
 
 if __name__ == '__main__':  # Ensures this is the file being ran
