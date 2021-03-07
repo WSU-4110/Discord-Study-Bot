@@ -5,17 +5,16 @@ from keep_alive import keep_alive
 from discord.ext import commands
 from utils import database_utils, async_tasks, config
 
+bot = commands.Bot(
+	command_prefix="!",  # Change to desired prefix
+	case_insensitive=True  # Commands aren't case-sensitive
+)
+
 bot.author_ids = [189533543993442304,
                   154752622262353921,
                   667203504196026422,
                   359496559773351936,
                   487272627006734339]
-
-
-bot = commands.Bot(
-	command_prefix="!",  # Change to desired prefix
-	case_insensitive=True  # Commands aren't case-sensitive
-)
 
 
 async def reinit_queue():
