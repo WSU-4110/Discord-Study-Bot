@@ -6,6 +6,7 @@ from collections import Counter
 
 class TimerPriorityQueue(PriorityQueue):
     """A derived class of the in-built PriorityQueue used to accommodate Timer objects"""
+
     def __init__(self):
         super().__init__()
         self.alarm_map = Counter()  # a Counter object used to keep track of all the timers to fire at a certain point in time
@@ -48,7 +49,7 @@ class TimerPriorityQueue(PriorityQueue):
     def get_tasks_by_user(self, user_id):
         """Function to get the Counter object to retrieve all the timer-derived objects for a given user"""
         return self.user_map[user_id]
-    
+
     def remove_timer(self, user_id, message_id):
         items_to_reinsert = []
         a_timer = None
@@ -59,9 +60,9 @@ class TimerPriorityQueue(PriorityQueue):
                 break
             else:
                 items_to_reinsert.append(a_timer)
-         for item in items_to_reinsert:
+        for item in items_to_reinsert:
             self.put(item)
-         return a_timer
+        return a_timer
 
     def __len__(self):
         """Function to get the size of this queue"""

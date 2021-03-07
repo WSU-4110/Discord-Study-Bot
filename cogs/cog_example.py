@@ -1,5 +1,6 @@
 import discord
 from discord.ext import commands
+from utils import config
 
 
 class DevCommands(commands.Cog, name='Developer Commands'):
@@ -12,7 +13,7 @@ class DevCommands(commands.Cog, name='Developer Commands'):
 		"""
 		The default check for this cog whenever a command is used. Returns True if the command is allowed.
 		"""
-		return ctx.author.id in self.bot.author_ids
+		return ctx.author.id in config.author_ids
 
 	@commands.command(  # Decorator to declare where a command is.
 		name='reload',  # Name of the command, defaults to function name.
