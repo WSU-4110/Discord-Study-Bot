@@ -77,3 +77,7 @@ class BaseDBModel(ABC):
     def get_table_name(self):
         """ returns the table name using local objects class type """
         return str(type(locals()['self'])).split('.')[-1].split("'")[0].upper() + 'S'  # Adi's special code
+
+    def pre_flight_for_deletion(self):
+        """ a pre-flight check to ensure if delation (of a specific instance) should be allowed"""
+        return True

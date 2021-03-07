@@ -37,7 +37,7 @@ class TimedCommands(commands.Cog, name="Timed Commands"):
 
     @commands.command(name="delete-highest-timer", aliases=['dht'])
     async def delete_highest_timer(self, ctx):
-        """ Sends Timer information for nearest pending Timer instance. """
+        """ Delete the top timer from the priority queue. """
 
         userid = ctx.message.author.id
         top_timer = config.timer_pqueue.peek()

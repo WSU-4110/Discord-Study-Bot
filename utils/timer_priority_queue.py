@@ -51,6 +51,7 @@ class TimerPriorityQueue(PriorityQueue):
         return self.user_map[user_id]
 
     def remove_timer(self, message_id):
+        """Function to remove a specific timer (given a message_id) from the queue using a brute-force O(N) method where"""
         items_to_reinsert = []
         a_time = None
         while True:
