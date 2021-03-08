@@ -18,7 +18,7 @@ class TimedCommands(commands.Cog, name="Timed Commands"):
 
         # Timer creation
         msg = ' '.join(msg)
-        timer_obj = timer.Timer(userid=userid, time_delta_mins=int(time), msg=msg, discord_message=ctx.message)
+        timer_obj = timer.Timer(userid=userid, time_delta_secs=int(time)*60, msg=msg, discord_message=ctx.message)
 
         # P-queue and database update
         config.timer_pqueue.add_task(timer_obj)

@@ -24,9 +24,9 @@ class Reminder(timer.Timer):
             dt.datetime(self._current_year, self._month, self._day, self._hour, self._minute), orig=tz)
 
         # convert deadline_date to minutes
-        minutes = (deadline_date - time_utils.orig_to_utc(self._today)).total_seconds() / 60
+        seconds = (deadline_date - time_utils.orig_to_utc(self._today)).total_seconds()
 
-        super().__init__(userid, minutes, msg, discord_message, include_seconds=True)
+        super().__init__(userid, seconds, msg, discord_message, include_seconds=True)
 
     # function methods below
     def get_next_reminder_date(self, day):
