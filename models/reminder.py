@@ -4,6 +4,8 @@ from datetime import timedelta as td
 import datetime as dt
 import pytz
 
+_days_abbr = ['m', 't', 'w', 'th', 'f', 's', 'su']
+
 
 class Reminder(timer.Timer):
     def __init__(self, userid: str, msg: str, discord_message, day: str, hour: int, minute: int,
@@ -31,12 +33,16 @@ class Reminder(timer.Timer):
     # function methods below
     def get_next_reminder_date(self, day):
         """calculates the reminder date from day of week"""
-        day_to_i = {d: i for i, d in enumerate(['m', 't', 'w', 'th', 'f', 's', 'su'])}
+        day_to_i = {d: i for i, d in enumerate(_days_abbr)}
         day_of_week = day_to_i[day.lower()]
 
         next_date = self._today + td(days=-self._today.weekday() + day_of_week, weeks=0)
 
-        if next_date < self._today:
+        if next_date == self._today:
+            if self._hour <= self._today.hour:
+                if self._minute <= self._today.minute:
+                    next_date = self._today + td(days=-self._today.weekday() + day_of_week, weeks=1)
+        elif next_date < self._today:
             next_date = self._today + td(days=-self._today.weekday() + day_of_week, weeks=1)
 
         return next_date
@@ -44,15 +50,15 @@ class Reminder(timer.Timer):
     # helper methods below
     def __instantiate_next_instance_of_reminder(self, limited_repetitions: bool = False):
         """ Creates new instance of the object in priority queue & database (only for pre_flight_for_deletion) """
-        reminder_obj = Reminder(self.userid, self._msg, self._discord_message, self._day, self._hour, self._minute,
+        reminder_obj = Reminder(self.userid, self._msg, self._discord_message,
+                                _days_abbr[self._next_date.weekday()], self._hour, self._minute,
                                 (self.recurrence - (-1 if limited_repetitions else 0)), self._tz)
-        # config.timer_pqueue.remove_timer(self)
         config.timer_pqueue.add_task(reminder_obj)
-        reminder_obj.update(['message_id', 'userid', 'channel_id', 'start_time', 'end_time', 'msg', 'recurrence'],
-                            self.message_id)
+
+        #reminder_obj.update(['message_id', 'userid', 'channel_id', 'start_time', 'end_time', 'msg', 'recurrence'], self.message_id)
+        reminder_obj.update(['start_time', 'end_time', 'msg', 'recurrence'], self.message_id)
 
         # override methods below
-
     def pre_flight_for_deletion(self):
         """ override for pre-flight check function to ensure if deletion (of a specific instance) should be allowed """
         if self.recurrence == 0:  # one-time reminder (default)
