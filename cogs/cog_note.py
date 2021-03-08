@@ -14,25 +14,35 @@ class NotesCommands(commands.Cog, name="Notes Commands"):
 
     @commands.command(name="create-note", aliases=["cn"])  # command to create a note
     async def create_note(self, ctx, *msg: str):
-        userid = ctx.message.author.id
-        singular_note = note.Note(userid, ' '.join(msg))
-        cfg.note_dict[userid].append(note)
-        await ctx.send(f"Note created at {singular_note.time_stamp}!")
+        userid = ctx.message.author.id  # retrieving userid to be used as key in dictionary
+        singular_note = note.Note(userid, ' '.join(msg))  # Note object created using message entered by user
+        cfg.note_dict[userid].append(singular_note)  # message stored dictionary using user ID
+        await ctx.send(f"Note created at {singular_note.time_stamp}!")  # prints to screen
 
     @commands.command(name="list-notes", aliases=["ln"])  # command to list notes
     async def list_notes(self, ctx):
+        userid = ctx.message.author.id  # user ID used as key in dictionary
+        i = 1
+        for singular_note in cfg.note_dict[userid]:  # looks for user ID in dictionary
+            await ctx.send(f"{i} | {singular_note}")  # prints notes to screen
+            i += 1
+
+    @commands.command(name="delete-note", aliases=["dn"])  # command to delete note
+    async def delete_note(self, ctx, index):
         userid = ctx.message.author.id
-        for singular_note in cfg.note_dict[userid]:
-            message = await ctx.send(f"{singular_note}")
-            #await message.add_reaction("❌")
+        if int(index) < len(cfg.note_dict[userid]):
+            del cfg.note_dict[userid][(int(index) - 1)]
+            await ctx.send("Note deleted!")
 
-    # *** commands end above ***
+    @commands.command(name="embed", aliases=["eb"])
+    async def embed(self, ctx):
+        embed = discord.Embed(title="Sample Embed",
+                              url="https://realdrewdata.medium.com/",
+                              description="This is an embed that will show how to build an embed and the different "
+                                          "components",
+                              color=0xFF5733)
+        await ctx.send(embed=embed)
 
-    # feature in progress
-    #@commands.Cog.listener()
-    #async def on_reaction_add(self, reaction, user):
-    #    channel = reaction.message.channel
-    #    await channel.send(f"reaction detected by {user}.\n{reaction.message}")
 
 def setup(bot):
     bot.add_cog(NotesCommands(bot))
