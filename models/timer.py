@@ -1,7 +1,7 @@
 import datetime as dt
 from datetime import timedelta as td
 from models import base_db_model
-from utils import timeutils, database_utils
+from utils import time_utils, database_utils
 
 
 class Timer(base_db_model.BaseDBModel):
@@ -16,8 +16,8 @@ class Timer(base_db_model.BaseDBModel):
             self._start_time = start_time
             self._end_time = end_time
         if not include_seconds:
-            self._start_time = timeutils.str_to_datetime(self._start_time.strftime("%Y-%m-%d %H:%M"))
-            self._end_time = timeutils.str_to_datetime(self._end_time.strftime("%Y-%m-%d %H:%M"))
+            self._start_time = time_utils.str_to_datetime(self._start_time.strftime("%Y-%m-%d %H:%M"))
+            self._end_time = time_utils.str_to_datetime(self._end_time.strftime("%Y-%m-%d %H:%M"))
         self._msg = msg  # remaining message text
         self._discord_message = discord_message  # message object
         self.message_id = self._discord_message.id

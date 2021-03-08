@@ -1,4 +1,4 @@
-from utils import timeutils, config
+from utils import time_utils, config
 from models import timer
 from datetime import timedelta as td
 import datetime as dt
@@ -20,11 +20,11 @@ class Reminder(timer.Timer):
         self.recurrence = recurring_type
 
         #  creates reminder notification time object
-        deadline_date = timeutils.orig_to_utc(
+        deadline_date = time_utils.orig_to_utc(
             dt.datetime(self._current_year, self._month, self._day, self._hour, self._minute), orig=tz)
 
         # convert deadline_date to minutes
-        minutes = (deadline_date - timeutils.orig_to_utc(self._today)).total_seconds() / 60
+        minutes = (deadline_date - time_utils.orig_to_utc(self._today)).total_seconds() / 60
 
         super().__init__(userid, minutes, msg, discord_message, include_seconds=True)
 

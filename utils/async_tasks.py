@@ -14,5 +14,7 @@ async def handle_timers():
         if dt.datetime.utcnow() >= top_timer.end_time:  # check if the UTC time now is >= the UTC end time for the top timer
             timers_to_fire = config.timer_pqueue.get_all_tasks_to_fire()  # get all of the timers that need to fire now
             for timer in timers_to_fire:
+                if timer.pre_flight_for_deletion():
+                    timer.delete(timer.message_id)
                 await timer.discord_message.channel.send(timer.formatted_discord_message())  # send the discord message for each timer
         await asyncio.sleep(10)  # sleep for 10 seconds and check again
