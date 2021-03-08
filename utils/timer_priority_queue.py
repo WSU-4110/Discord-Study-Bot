@@ -27,7 +27,7 @@ class TimerPriorityQueue(PriorityQueue):
         for i in range(num_items):
             a_time = self.get_top_task()
             self.user_map[a_time.userid].remove(a_time)
-            # self.alarm_map[a_time.end_time] -= 1
+            self.alarm_map[a_time.end_time] -= 1
             tasks_arr.append(a_time)
         return tasks_arr
 
