@@ -1,6 +1,6 @@
 import discord
 from discord.ext import commands
-from utils import config, async_tasks, timeutils
+from utils import config, async_tasks, time_utils
 from models import reminder
 
 
@@ -14,7 +14,7 @@ class ReminderCommands(commands.Cog, name="Reminder Commands"):
     async def set_reminder(self, ctx, day: str, hour: int, minute: int, *msg: str):
         """ (sr) Grabs user reminder data and pushes it to the time priority que """
         userid = ctx.message.author.id
-        if tz := msg[0] in timeutils.tz_map:
+        if tz := msg[0] in time_utils.tz_map:
             msg_str = ' '.join(msg[1:])
             reminder_obj = reminder.Reminder(userid, msg_str, ctx.message, day, hour, minute, 0, tz)
         else:
@@ -31,7 +31,7 @@ class ReminderCommands(commands.Cog, name="Reminder Commands"):
     async def set_infinite_reminder(self, ctx, day: str, hour: int, minute: int, *msg: str):
         """ (sir) Grabs user reminder data and pushes it to the time priority que """
         userid = ctx.message.author.id
-        if tz := msg[0] in timeutils.tz_map:
+        if tz := msg[0] in time_utils.tz_map:
             msg_str = ' '.join(msg[1:])
             reminder_obj = reminder.Reminder(userid, msg_str, ctx.message, day, hour, minute, -1, tz)
         else:
@@ -48,7 +48,7 @@ class ReminderCommands(commands.Cog, name="Reminder Commands"):
     async def set_repetitive_reminder(self, ctx, day: str, hour: int, minute: int, repetitions: int, *msg: str):
         """ (srr) Grabs user reminder data and pushes it to the time priority que """
         userid = ctx.message.author.id
-        if tz := msg[0] in timeutils.tz_map:
+        if tz := msg[0] in time_utils.tz_map:
             msg_str = ' '.join(msg[1:])
             reminder_obj = reminder.Reminder(userid, msg_str, ctx.message, day, hour, minute, int(repetitions), tz)
         else:

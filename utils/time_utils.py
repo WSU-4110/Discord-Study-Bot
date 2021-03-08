@@ -33,7 +33,7 @@ tz_map = {
 a_time = dt.datetime.now()
 a_time_2 = orig_to_utc(a_time)
 print(a_time_2, dt.datetime.utcnow(), a_time.astimezone(pytz.utc))
-print(utc_to_dest(a_time_2, 'PST'), a_time)
+print(utc_to_dest(a_time_2, 'EST'), a_time)
 '''
 
 
