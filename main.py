@@ -1,6 +1,6 @@
 import os
 import datetime as dt
-from models import timer, reminder
+from models import timer, reminder, note
 from keep_alive import keep_alive
 from discord.ext import commands
 from utils import database_utils, async_tasks, config
@@ -36,6 +36,15 @@ async def reinit_queue():
                                         recurrence)
                 config.timer_pqueue.add_task(rem)
         except:
+            pass
+
+    notes = database_utils.exec("SELECT * FROM NOTES")
+    for n in notes:
+        try:
+            message_id, user_id, message, time_stamp = n
+            singular_note = note.Note(message_id, user_id, message, time_stamp)
+            config.note_dict[int(user_id)].append(singular_note)
+        except Exception as e:
             pass
 
 
