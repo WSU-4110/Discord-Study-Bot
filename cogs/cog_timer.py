@@ -18,14 +18,14 @@ class TimedCommands(commands.Cog, name="Timed Commands"):
 
         # Timer creation
         msg = ' '.join(msg)
-        timer_obj = timer.Timer(userid=userid, time_delta_mins=int(time), msg=msg, discord_message=ctx.message)
+        timer_obj = timer.Timer(userid=userid, time_delta_secs=int(time)*60, msg=msg, discord_message=ctx.message)
 
         # P-queue and database update
         config.timer_pqueue.add_task(timer_obj)
         timer_obj.insert(['message_id', 'userid', 'channel_id', 'start_time', 'end_time', 'msg'])
 
         await ctx.send("Timer created!")
-        await async_tasks.handle_timers()
+        # await async_tasks.handle_timers()
 
     @commands.command(name="get-highest-timer", aliases=['ght'])
     async def highest_timer(self, ctx):
@@ -34,6 +34,15 @@ class TimedCommands(commands.Cog, name="Timed Commands"):
         userid = ctx.message.author.id
         top_timer = config.timer_pqueue.peek()
         await ctx.send(repr(top_timer))
+
+    @commands.command(name="delete-highest-timer", aliases=['dht'])
+    async def delete_highest_timer(self, ctx):
+        """ Delete the top timer from the priority queue. """
+
+        userid = ctx.message.author.id
+        top_timer = config.timer_pqueue.peek()
+        removed_top_timer = config.timer_pqueue.remove_timer(top_timer.message_id)
+        await ctx.send(repr(removed_top_timer))
 
     @commands.command(name="timer-queue", aliases=['tq'])
     async def timer_queue(self, ctx):

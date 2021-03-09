@@ -6,6 +6,7 @@ from collections import Counter
 
 class TimerPriorityQueue(PriorityQueue):
     """A derived class of the in-built PriorityQueue used to accommodate Timer objects"""
+
     def __init__(self):
         super().__init__()
         self.alarm_map = Counter()  # a Counter object used to keep track of all the timers to fire at a certain point in time
@@ -24,7 +25,10 @@ class TimerPriorityQueue(PriorityQueue):
         tasks_arr = []
         num_items = self.alarm_map[self.peek().end_time]
         for i in range(num_items):
-            tasks_arr.append(self.get_top_task())
+            a_time = self.get_top_task()
+            self.user_map[a_time.userid].remove(a_time)
+            self.alarm_map[a_time.end_time] -= 1
+            tasks_arr.append(a_time)
         return tasks_arr
 
     def get_top_task(self):
@@ -48,6 +52,22 @@ class TimerPriorityQueue(PriorityQueue):
     def get_tasks_by_user(self, user_id):
         """Function to get the Counter object to retrieve all the timer-derived objects for a given user"""
         return self.user_map[user_id]
+
+    def remove_timer(self, message_id):
+        """Function to remove a specific timer (given a message_id) from the queue using a brute-force O(N) method where"""
+        items_to_reinsert = []
+        a_time = None
+        while True:
+            a_time = self.get()
+            if a_time.message_id == message_id:
+                self.user_map[a_time.userid].remove(a_time)
+                self.alarm_map[a_time.end_time] -= 1
+                break
+            else:
+                items_to_reinsert.append(a_time)
+        for item in items_to_reinsert:
+            self.put(item)
+        return a_time
 
     def __len__(self):
         """Function to get the size of this queue"""

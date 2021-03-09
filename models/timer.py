@@ -1,19 +1,23 @@
 import datetime as dt
 from datetime import timedelta as td
 from models import base_db_model
-from utils import timeutils, database_utils
+from utils import time_utils, database_utils
 
 
 class Timer(base_db_model.BaseDBModel):
-    def __init__(self, userid: str, time_delta_mins: int, msg: str, discord_message, include_seconds=True):
+    def __init__(self, userid: str, time_delta_secs: int, msg: str, discord_message, include_seconds=True, start_time=None, end_time=None):
         """ Initialize attributes of Timer instance. """
 
         self._userid = userid
-        self._start_time = dt.datetime.utcnow()  # UTC time standard
-        self._end_time = self.start_time + td(minutes=time_delta_mins)
+        if start_time is None and end_time is None:
+            self._start_time = dt.datetime.utcnow()  # UTC time standard
+            self._end_time = self.start_time + td(seconds=time_delta_secs)
+        else:
+            self._start_time = start_time
+            self._end_time = end_time
         if not include_seconds:
-            self._start_time = timeutils.str_to_datetime(self._start_time.strftime("%Y-%m-%d %H:%M"))
-            self._end_time = timeutils.str_to_datetime(self._end_time.strftime("%Y-%m-%d %H:%M"))
+            self._start_time = time_utils.str_to_datetime(self._start_time.strftime("%Y-%m-%d %H:%M"))
+            self._end_time = time_utils.str_to_datetime(self._end_time.strftime("%Y-%m-%d %H:%M"))
         self._msg = msg  # remaining message text
         self._discord_message = discord_message  # message object
         self.message_id = self._discord_message.id
