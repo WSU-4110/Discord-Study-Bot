@@ -1,7 +1,8 @@
 from duckpy import Client
+from models import base_db_model
 
 
-class Search:
+class Search(base_db_model.BaseDBModel):
     def __init__(self, search_str: str, limit_results: int = 5):
         self._client = Client()
         self._search_str = search_str
