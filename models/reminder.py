@@ -2,6 +2,7 @@ from utils import time_utils, config
 from models import timer
 from datetime import timedelta as td
 import datetime as dt
+import discord
 import pytz
 
 _days_abbr = ['m', 't', 'w', 'th', 'f', 's', 'su']
@@ -70,7 +71,17 @@ class Reminder(timer.Timer):
             self.__instantiate_next_instance_of_reminder(True)
             return False
 
-    def formatted_discord_message(self):
-        """The message that is sent to the user on timer event"""
-        return f"{self.discord_message.author.mention} Your reminder for {str(self.end_time)} has finished. " \
-               f"'Here's your initial message: {self.msg}"
+    # def formatted_discord_message(self):
+    #     """The message that is sent to the user on timer event"""
+    #     return f"{self.discord_message.author.mention} Your reminder for {str(self.end_time)} has finished. " \
+    #            f"'Here's your initial message: {self.msg}"
+
+    def embed(self):
+        return discord.Embed(
+            title="Reminder!",
+            description=self.msg,
+            # colour=cfg.Colors.SUCCESS
+        ).add_field(
+            name="Next Occurrence",
+            value=time_utils.utc_to_dest(self._next_date + td(days=7)).strftime("%c")
+        )

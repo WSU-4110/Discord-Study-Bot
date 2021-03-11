@@ -16,5 +16,5 @@ async def handle_timers():
             for timer in timers_to_fire:
                 if timer.pre_flight_for_deletion():
                     timer.delete(timer.message_id)
-                await timer.discord_message.channel.send(timer.formatted_discord_message())  # send the discord message for each timer
-        await asyncio.sleep(10)  # sleep for 10 seconds and check again
+                await timer.discord_message.channel.send(timer.formatted_discord_message(), embed=timer.embed())  # send the discord message for each timer
+        await asyncio.sleep(3)  # sleep for 10 seconds and check again
