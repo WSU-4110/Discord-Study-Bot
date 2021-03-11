@@ -1,19 +1,24 @@
 import datetime as dt
+from models import base_db_model
 
 
-class Note:
-
-    def __init__(self, userid: str, data: str):
+class Note(base_db_model.BaseDBModel):
+    def __init__(self, msg_id: int, userid: int, data: str, time_stamp: dt.datetime = dt.datetime.now()):
         """ Default constructor """
+        self._message_id = msg_id
         self._userid = userid
         self._data = data
-        self._time_stamp = dt.datetime.now()
+        self._time_stamp = time_stamp
 
     def __repr__(self):
         """ Function to represent object as string"""
         return f"Note " \
                f"[ {self._data} " \
                f"| Created at {self.time_stamp} ]"
+
+    def get_message_id(self):
+        """ Function returns the message_id """
+        return self._message_id
 
     @property
     def userid(self):
