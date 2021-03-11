@@ -63,7 +63,9 @@ extensions = [
     'cogs.cog_note',
     'cogs.cog_reminder',
     'cogs.cog_timer',
-    'cogs.cog_search'
+    'cogs.cog_search',
+    'cogs.cog_profile',
+    'cogs.cog_ticket'
 ]
 
 if __name__ == '__main__':  # Ensures this is the file being ran
