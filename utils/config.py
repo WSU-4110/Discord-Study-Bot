@@ -21,6 +21,7 @@ def hex_to_int(colhex: str) -> int:
 class Colors(NamedTuple):
     WSU_GREEN: int  # general info
     WSU_GOLD: int  # user prompts
+    SUCCESS: int
     ERROR: int  # input errors
     TIMEOUT: int  # input timeout
     LINK: int  # link color
@@ -30,6 +31,7 @@ colors = Colors(
     WSU_GREEN=0x007E6E,
     WSU_GOLD=0XFFD441,
     ERROR=0xFF0000,
+    SUCCESS=0x00FF85,
     TIMEOUT=0xFF8500,
-    LINK=0x02aaf2
+    LINK=0x02AAF2
 )
