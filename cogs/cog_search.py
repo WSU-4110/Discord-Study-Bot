@@ -42,6 +42,7 @@ class SearchCommands(commands.Cog, name="Search Commands"):
             embed = discord.Embed(title="Which website do you want to search?",
                                   description="example: youtube.com",
                                   color=cfg.colors.WSU_GOLD)
+            embed.set_author(name=ctx.author.display_name, icon_url=ctx.author.avatar_url)
             await ctx.send(embed=embed)
             site = await self.bot.wait_for('message',
                                            timeout=60.0,
@@ -51,6 +52,7 @@ class SearchCommands(commands.Cog, name="Search Commands"):
             embed = discord.Embed(title="What do you want to find?",
                                   description="example: 7 wonders of the world",
                                   color=cfg.colors.WSU_GOLD)
+            embed.set_author(name=ctx.author.display_name, icon_url=ctx.author.avatar_url)
             await ctx.send(embed=embed)
             args = await self.bot.wait_for('message',
                                            timeout=60.0,
@@ -83,6 +85,7 @@ class SearchCommands(commands.Cog, name="Search Commands"):
                               url=get_url(args),
                               description=msg,
                               color=cfg.colors.LINK)
+        embed.set_author(name=ctx.author.display_name, icon_url=ctx.author.avatar_url)
         await ctx.send(embed=embed)
 
 
