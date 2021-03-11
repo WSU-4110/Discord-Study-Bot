@@ -20,9 +20,9 @@ class Note(base_db_model.BaseDBModel):
         """ Function returns the message_id """
         return self._message_id
 
-    def get_message_id(self):
+    def get_data(self):
         """ Function returns the message_id """
-        return self._message_id
+        return self._data
     
     @property
     def userid(self):
