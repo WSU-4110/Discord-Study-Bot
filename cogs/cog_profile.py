@@ -1,6 +1,6 @@
 import discord
 from discord.ext import commands
-from utils import config
+from utils import config as cfg
 import asyncio
 from utils import time_utils
 
@@ -23,7 +23,7 @@ class ProfileCommands(commands.Cog, name='Profile Commands'):
         await ctx.send(embed=discord.Embed(
             title="Welcome to StudyBot!",
             description="This process will help you set up your user information to get started with the StudyBot system.\n",
-            colour=0x062f31
+            colour=cfg.colors.WSU_GREEN
         ).set_author(
             name=ctx.author.display_name,
             icon_url=ctx.author.avatar_url
@@ -31,7 +31,7 @@ class ProfileCommands(commands.Cog, name='Profile Commands'):
 
         await ctx.send(embed=discord.Embed(
             description="Please enter your time zone information as a 3-letter code (eg. EST, PST).\n",
-            colour=0x062f31
+            colour=cfg.colors.WSU_GOLD
         ))
 
         while True:
@@ -42,7 +42,7 @@ class ProfileCommands(commands.Cog, name='Profile Commands'):
             except asyncio.TimeoutError as e:
                 await ctx.send(embed=discord.Embed(
                     description="Took too long to respond!",
-                    colour=0xFF0000
+                    colour=cfg.colors.TIMEOUT
                 ))
                 break
 
@@ -58,7 +58,7 @@ class ProfileCommands(commands.Cog, name='Profile Commands'):
         else:
             await ctx.send(embed=discord.Embed(
                 description="Time zone not recognized!",
-                colour=0xFF0000
+                colour=cfg.colors.ERROR
             ))
             return False
 
