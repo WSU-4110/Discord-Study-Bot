@@ -22,7 +22,7 @@ class NotesCommands(commands.Cog, name="Notes Commands"):
 
         embed = discord.Embed(title="Note Created!",
                               description=msg,
-                              color=cfg.colors.WSU_GREEN)
+                              color=cfg.colors.SUCCESS)
         embed.set_footer(text=f"created at {singular_note.time_stamp}")
         embed.set_author(name=ctx.author.display_name, icon_url=ctx.author.avatar_url)
         await ctx.send(embed=embed)
@@ -69,7 +69,7 @@ class NotesCommands(commands.Cog, name="Notes Commands"):
 
                 # output to user
                 embed = discord.Embed(title="Note Deleted!",
-                                      color=cfg.colors.WSU_GREEN)
+                                      color=cfg.colors.SUCCESS)
                 embed.set_footer(text=f"created at {singular_note.time_stamp}")
                 embed.set_author(name=ctx.author.display_name, icon_url=ctx.author.avatar_url)
                 await ctx.send(embed=embed)
