@@ -5,13 +5,14 @@ from utils import time_utils, database_utils
 
 
 class Timer(base_db_model.BaseDBModel):
-    def __init__(self, userid: str, time_delta_secs: int, msg: str, discord_message, include_seconds=True, start_time=None, end_time=None):
+    def __init__(self, userid: str, td_secs: int, msg: str, discord_message, include_seconds=True, start_time=None,
+                 end_time=None):
         """ Initialize attributes of Timer instance. """
 
         self._userid = userid
         if start_time is None and end_time is None:
             self._start_time = dt.datetime.utcnow()  # UTC time standard
-            self._end_time = self.start_time + td(seconds=time_delta_secs)
+            self._end_time = self.start_time + td(seconds=td_secs)
         else:
             self._start_time = start_time
             self._end_time = end_time
@@ -75,7 +76,7 @@ class Timer(base_db_model.BaseDBModel):
 
         return self.end_time - dt.datetime.utcnow()
 
-    def embed_repr(self):
+    def embed(self):
 
         """ Returns Discord Embed representation for message sent when Timer instance is activated. """
 
