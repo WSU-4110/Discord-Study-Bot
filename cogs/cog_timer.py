@@ -107,7 +107,7 @@ class TimedCommands(commands.Cog, name="Timed Commands"):
             icon_url=ctx.author.avatar_url
         ).add_field(
             name="Message",
-            value=f"**{t.msg}**",
+            value=t.msg,
             inline=False
         ).add_field(
             name="Created at",

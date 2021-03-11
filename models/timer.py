@@ -2,6 +2,7 @@ import datetime as dt
 from datetime import timedelta as td
 from models import base_db_model
 from utils import time_utils, database_utils
+import discord
 
 
 class Timer(base_db_model.BaseDBModel):
@@ -68,8 +69,7 @@ class Timer(base_db_model.BaseDBModel):
     def formatted_discord_message(self):
         """ Returns message sent when Timer instance is activated. """
 
-        return f"{self.discord_message.author.mention} Your timer for {str(self.end_time)} has finished. " \
-               f"Here's your initial message: {self.msg}"
+        return f"Alerting{self.discord_message.author.mention}!"
 
     def time_remaining(self):
         """ Returns remaining time until Timer activation. """
@@ -80,7 +80,11 @@ class Timer(base_db_model.BaseDBModel):
 
         """ Returns Discord Embed representation for message sent when Timer instance is activated. """
 
-        pass
+        return discord.Embed(
+            title="Timer Expired!",
+            description=self.msg,
+            # colour=cfg.Colors.SUCCESS
+        )
 
     def __lt__(self, obj):
         """self < obj."""
