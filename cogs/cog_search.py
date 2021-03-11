@@ -1,5 +1,8 @@
+import asyncio
+import discord
 from discord.ext import commands
 from models import search
+from utils import config as cfg
 
 
 def format_words(terms: list):
@@ -9,7 +12,7 @@ def format_words(terms: list):
 
 def get_url(words_list: list):
     terms = format_words(words_list)
-    return f'<https://letmegooglethat.com/?q={terms}>'
+    return f'https://letmegooglethat.com/?q={terms}'
 
 
 class SearchCommands(commands.Cog, name="Search Commands"):
@@ -19,27 +22,68 @@ class SearchCommands(commands.Cog, name="Search Commands"):
     @commands.command(name='search', aliases=['srch', 's'])
     async def default_search(self, ctx, *, args):
         """ Search duckduckgo to get results """
+        # creates search object and gets results
         results = search.Search(args).get_results()
 
+        # output
         for index, result in enumerate(results):
-            await ctx.send(str(index + 1) + ". " + "**Title:** " + result['title'] +
-                           "\n**Description:** " + result['description'] +
-                           "\n" + result['url'])
+            embed = discord.Embed(title=("Result " + str(index + 1) + ": " + result['title']),
+                                  url=result['url'],
+                                  description=result['description'],
+                                  color=cfg.colors.LINK)
+            await ctx.send(embed=embed)
 
-    @commands.command(name='search-site', aliases=['srch-site', 'ss', 'a-srch', 's-site', 'srch-s', 'searchsite', 's-s'])
-    async def search_site(self, ctx, site, *, args):
+    @commands.command(name='search-site',
+                      aliases=['srch-site', 'ss', 'a-srch', 's-site', 'srch-s', 'searchsite', 's-s'])
+    async def search_site(self, ctx):
         """ Search duckduckgo to get results from specific site"""
-        results = search.Search(args + " site:" + str(site)).get_results()
+        try:
+            # asks user for site they want to search
+            embed = discord.Embed(title="Which website do you want to search?",
+                                  description="example: youtube.com",
+                                  color=cfg.colors.WSU_GOLD)
+            await ctx.send(embed=embed)
+            site = await self.bot.wait_for('message',
+                                           timeout=60.0,
+                                           check=lambda message: message.author == ctx.author)
 
-        for index, result in enumerate(results):
-            await ctx.send(str(index + 1) + ". " + "**Title:** " + result['title'] +
-                           "\n**Description:** " + result['description'] +
-                           "\n" + result['url'])
+            # asks user for what they want to search for
+            embed = discord.Embed(title="What do you want to find?",
+                                  description="example: 7 wonders of the world",
+                                  color=cfg.colors.WSU_GOLD)
+            await ctx.send(embed=embed)
+            args = await self.bot.wait_for('message',
+                                           timeout=60.0,
+                                           check=lambda message: message.author == ctx.author)
+
+            # creates search object w/ site restriction and gets results
+            results = search.Search(args.content + " site:" + site.content).get_results()
+
+            # output
+            for index, result in enumerate(results):
+                embed = discord.Embed(title=("Result " + str(index + 1) + ": " + result['title']),
+                                      url=result['url'],
+                                      description=result['description'],
+                                      color=cfg.colors.LINK)
+                await ctx.send(embed=embed)
+        except asyncio.TimeoutError:
+            # in case user takes more than 60 seconds to respond, send message
+            embed = discord.Embed(title="Timeout Error!!!",
+                                  description="took more than 60 seconds to respond.",
+                                  color=cfg.colors.TIMEOUT)
+            embed.set_thumbnail(url="https://thumbs.dreamstime.com/b/error-icon-16125237.jpg")
+            await ctx.send(embed=embed)
 
     @commands.command(name='big-search', aliases=['.big-srch', 'bs', 'b-srch', 'b-s', 'big-s', 'bigs'])
     async def big_search(self, ctx, *args):
         """ Search google to get results """
-        await ctx.send(get_url(args))
+        # output
+        msg = " ".join(args)
+        embed = discord.Embed(title="Link to Big Search",
+                              url=get_url(args),
+                              description=msg,
+                              color=cfg.colors.LINK)
+        await ctx.send(embed=embed)
 
 
 def setup(bot):

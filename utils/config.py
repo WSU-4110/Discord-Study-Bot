@@ -23,11 +23,13 @@ class Colors(NamedTuple):
     WSU_GOLD: int  # user prompts
     ERROR: int  # input errors
     TIMEOUT: int  # input timeout
+    LINK: int  # link color
 
 
 colors = Colors(
-    WSU_GREEN=0x00584D,
-    WSU_GOLD=0XFFC842,
+    WSU_GREEN=0x007E6E,
+    WSU_GOLD=0XFFD441,
     ERROR=0xFF0000,
-    TIMEOUT=0x777777
+    TIMEOUT=0xFF8500,
+    LINK=0x02aaf2
 )
