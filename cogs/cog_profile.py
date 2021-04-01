@@ -1,5 +1,8 @@
 import discord
 from discord.ext import commands
+
+from builders import embedbuilder
+from directors import embeddirector
 from utils import config as cfg
 import asyncio
 from utils import time_utils
@@ -40,10 +43,7 @@ class ProfileCommands(commands.Cog, name='Profile Commands'):
                 if await self.change_timezone(ctx, response.content):
                     break
             except asyncio.TimeoutError as e:
-                await ctx.send(embed=discord.Embed(
-                    description="Took too long to respond!",
-                    colour=cfg.colors.TIMEOUT
-                ))
+                await ctx.send(embed=embeddirector.EmbedDirector.generate_embed(embedbuilder.TimeoutEmbedBuilder()))
                 break
 
     @commands.command(name="change-timezone", aliases=['change-tz', 'ctz'])

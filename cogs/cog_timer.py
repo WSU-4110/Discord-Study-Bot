@@ -2,6 +2,8 @@ import discord
 from discord.ext import commands
 from utils import config as cfg, async_tasks, time_utils
 from models import timer
+from builders import embedbuilder
+from directors import embeddirector
 from typing import *
 
 
@@ -25,10 +27,7 @@ class TimedCommands(commands.Cog, name="Timed Commands"):
         cfg.timer_pqueue.add_task(timer_obj)
         timer_obj.insert(['message_id', 'userid', 'channel_id', 'start_time', 'end_time', 'msg'])
 
-        await ctx.send(embed=discord.Embed(
-            description="Timer created!\n",
-            colour=cfg.colors.SUCCESS
-        ))
+        await ctx.send(embed=embeddirector.EmbedDirector.generate_embed(embedbuilder.SuccessEmbedBuilder()))
         # await async_tasks.handle_timers()
 
     @commands.command(name="list-timers", aliases=['lt'])
@@ -154,10 +153,7 @@ class TimedCommands(commands.Cog, name="Timed Commands"):
             target.delete(target.message_id)
             cfg.timer_pqueue.remove_timer(target.message_id)
 
-            await ctx.send(embed=discord.Embed(
-                description="Timer deleted!",
-                colour=cfg.colors.SUCCESS
-            ))
+            await ctx.send(embed=embeddirector.EmbedDirector.generate_embed(embedbuilder.SuccessEmbedBuilder()))
 
     @commands.command(name="unset-highest-timer", aliases=['uht'])
     async def unset_highest_timer(self, ctx):
