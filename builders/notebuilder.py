@@ -44,9 +44,24 @@ class PreBuiltNote(NoteBuilder, ABC):
     def __init__(self):
         self.build_note = Note()
 
+    def __repr__(self):
+        return f"Note " \
+               f"[ {self._data} " \
+               f"| Created at {self.time_stamp} ]"
+
     def set_data(self, new_data):
         self.build_note.set_data("Calculus HW due friday!")
         return self
+
+    def get_data(self):
+        return self._data
+
+    def get_time_stamp(self):
+        return self._time_stamp
+
+    def get_message_id(self):
+        return self._message_id
+
 
 
 
