@@ -21,7 +21,7 @@ class Note(base_db_model.BaseDBModel):
         return self._message_id
 
     def get_data(self):
-        """ Function returns the message_id """
+        """ Function returns the message_data """
         return self._data
     
     @property
