@@ -1,5 +1,8 @@
 import discord
 from discord.ext import commands
+
+from builders.ReminderBuilder import ReminderBuilder, PreBuiltReminderMon
+from builders.ReminderDirector import ReminderDirector
 from utils import config as cfg, time_utils
 from models import reminder
 
@@ -9,6 +12,30 @@ class ReminderCommands(commands.Cog, name="Reminder Commands"):
 
     def __init__(self, bot):
         self.bot = bot
+
+    #prototype builder design pattern implementation
+    #user types command 'me' to automatically create a reminder for 5:30 classes
+    @commands.command(name = "Monday-Evening", aliases =["me"])
+    async def set_reminder(self, ctx):
+
+        userid = ctx.message.author.id
+        #create director and builder to build the reminder object
+        director = ReminderDirector()
+        builder = PreBuiltReminderMon()
+        director.builder = builder
+        director.build_reminder()
+        reminder_obj = builder.get_reminder()
+
+        #set the userid, ctx, and message manually due to inheritance from timer class
+        reminder_obj.userid = userid
+        reminder_obj.discord_message = ctx.message
+        reminder_obj.msg = "Attend Monday Evening Class"
+
+        #insert reminder object information into database and into priorty queue
+        reminder_obj.insert(['message_id', 'userid', 'channel_id', 'start_time', 'end_time', 'msg', 'recurrence'])
+        cfg.timer_pqueue.add_task(reminder_obj)
+
+
 
     @commands.command(name="set-reminder", aliases=["sr"])
     async def set_reminder(self, ctx):

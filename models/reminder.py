@@ -9,7 +9,9 @@ _days_abbr = ['m', 't', 'w', 'th', 'f', 's', 'su']
 
 
 class Reminder(timer.Timer):
-    def __init__(self, userid: str, msg: str, discord_message, day: str, hour: int, minute: int,
+    # The init method has parameters all set to default values. This allows the builder to modify it later.
+    def __init__(self, userid: str = None, msg: str = None, discord_message=None, day: str = None, hour: int = 0,
+                 minute: int = 0,
                  recurring_type: int = 0, tz='EST'):
         """Constructor sets up attributes and prepares deadline"""
         self._today = dt.datetime.now()
@@ -30,6 +32,29 @@ class Reminder(timer.Timer):
         seconds = (deadline_date - time_utils.orig_to_utc(self._today)).total_seconds()
 
         super().__init__(userid, seconds, msg, discord_message, include_seconds=True)
+
+    # Setters for builder class. In python, @property is used to prohibit the method from being modified
+    @property
+    def set_hour(self, set_hour: int):
+        self._hour = set_hour
+
+    @property
+    def set_min(self, set_min: int):
+        self._minute = set_min
+
+    @property
+    def set_day(self, set_day: str):
+        self._day = set_day
+
+    @property
+    def set_recurrence(self, set_recurrence: int):
+        self.recurrence = set_recurrence
+
+    @property
+    def set_msg(self, msg: str):
+        self._msg = msg
+
+
 
     # function methods below
     def get_next_reminder_date(self, day):
@@ -56,10 +81,11 @@ class Reminder(timer.Timer):
                                 (self.recurrence - (-1 if limited_repetitions else 0)), self._tz)
         config.timer_pqueue.add_task(reminder_obj)
 
-        #reminder_obj.update(['message_id', 'userid', 'channel_id', 'start_time', 'end_time', 'msg', 'recurrence'], self.message_id)
+        # reminder_obj.update(['message_id', 'userid', 'channel_id', 'start_time', 'end_time', 'msg', 'recurrence'], self.message_id)
         reminder_obj.update(['start_time', 'end_time', 'msg', 'recurrence'], self.message_id)
 
         # override methods below
+
     def pre_flight_for_deletion(self):
         """ override for pre-flight check function to ensure if deletion (of a specific instance) should be allowed """
         if self.recurrence == 0:  # one-time reminder (default)
