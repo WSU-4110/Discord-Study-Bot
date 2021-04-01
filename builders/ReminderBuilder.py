@@ -1,8 +1,9 @@
-from abc import abstractmethod
+from abc import abstractmethod, ABC
 from models.reminder import Reminder
 
-#This specifies methods for creating reminders
-class ReminderBuilder():
+
+# This specifies methods for creating reminders
+class ReminderBuilder(ABC):
 
     @property
     def reminder(self) -> None:
@@ -33,8 +34,9 @@ class ReminderBuilder():
     def get_reminder():
         pass
 
-#The concrete builder that provide specific implementation of abstract methods in Reminder Builder
-#This class sets the needed parameters to properly build a reminder
+
+# The concrete builder that provide specific implementation of abstract methods in Reminder Builder
+# This class sets the needed parameters to properly build a reminder
 class PreBuiltReminderMon(ReminderBuilder):
 
     def __init__(self):
