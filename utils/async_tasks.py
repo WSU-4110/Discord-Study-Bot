@@ -7,7 +7,7 @@ async def handle_timers():
     """Asynchronous function that will handle all of the timer-derived objects in the priority queue"""
     while True:  # infinite loop
         if len(config.timer_pqueue) == 0:
-            await asyncio.sleep(10)
+            await asyncio.sleep(5)
             continue  # temporary behavior
         top_timer = config.timer_pqueue.peek()  # peek the top timer object from the queue
         print(top_timer.time_remaining())
