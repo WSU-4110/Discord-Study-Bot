@@ -21,3 +21,6 @@ class ReminderDirector:
         self.builder.set_hour()
         self.builder.set_min()
         self.builder.set_recurrence()
+
+    def get_reminder(self):
+        self.builder.get_reminder()
