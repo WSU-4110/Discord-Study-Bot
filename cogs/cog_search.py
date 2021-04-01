@@ -22,8 +22,10 @@ class SearchCommands(commands.Cog, name="Search Commands"):
     @commands.command(name='search', aliases=['srch', 's'])
     async def default_search(self, ctx, *, args):
         """ Search duckduckgo to get results """
-        # creates search object and gets results
-        results = search.Search(args).get_results()
+        # create search object and get results
+        search_obj = search.Search.get_instance()
+        search_obj.set_search_string(args)
+        results = search_obj.get_results()
 
         # output
         for index, result in enumerate(results):
@@ -59,7 +61,9 @@ class SearchCommands(commands.Cog, name="Search Commands"):
                                            check=lambda message: message.author == ctx.author)
 
             # creates search object w/ site restriction and gets results
-            results = search.Search(args.content + " site:" + site.content).get_results()
+            search_obj = search.Search.get_instance()
+            search_obj.set_search_string(args.content + " site:" + site.content)
+            results = search_obj.get_results()
 
             # output
             for index, result in enumerate(results):
