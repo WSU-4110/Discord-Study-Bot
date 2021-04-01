@@ -7,10 +7,20 @@ from collections import Counter
 class TimerPriorityQueue(PriorityQueue):
     """A derived class of the in-built PriorityQueue used to accommodate Timer objects"""
 
+    __instance = None
+
     def __init__(self):
         super().__init__()
         self.alarm_map = Counter()  # a Counter object used to keep track of all the timers to fire at a certain point in time
         self.user_map = {}  # a map used to keep track of all the timers for a given user
+        TimerPriorityQueue.__instance = self
+
+    @staticmethod
+    def get_instance():
+        """ Static access method. """
+        if TimerPriorityQueue.__instance is None:
+            TimerPriorityQueue()
+        return TimerPriorityQueue.__instance
 
     def add_task(self, a_time: timer.Timer):
         """Function to add a timer-derived object to the queue"""

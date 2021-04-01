@@ -1,6 +1,6 @@
 import discord
 from discord.ext import commands
-from utils import config as cfg, async_tasks, time_utils
+from utils import config as cfg, async_tasks, time_utils, timer_priority_queue
 from models import timer
 from typing import *
 
@@ -22,7 +22,7 @@ class TimedCommands(commands.Cog, name="Timed Commands"):
         timer_obj = timer.Timer(userid=userid, td_secs=int(time) * 60, msg=msg, discord_message=ctx.message)
 
         # P-queue and database update
-        cfg.timer_pqueue.add_task(timer_obj)
+        timer_priority_queue.TimerPriorityQueue.get_instance().add_task(timer_obj)
         timer_obj.insert(['message_id', 'userid', 'channel_id', 'start_time', 'end_time', 'msg'])
 
         await ctx.send(embed=discord.Embed(
@@ -37,7 +37,7 @@ class TimedCommands(commands.Cog, name="Timed Commands"):
         # Identify users and fetch their timers
         userid = ctx.author.id
         user_timers = sorted(
-            [obj for obj in cfg.timer_pqueue.user_map[userid] if type(obj) == timer.Timer]
+            [obj for obj in timer_priority_queue.TimerPriorityQueue.get_instance().user_map[userid] if type(obj) == timer.Timer]
         )
 
         if not user_timers:
@@ -87,7 +87,7 @@ class TimedCommands(commands.Cog, name="Timed Commands"):
         # Identify users and fetch their timers
         userid = ctx.author.id
         user_timers = sorted(
-            [obj for obj in cfg.timer_pqueue.user_map[userid] if type(obj) == timer.Timer]
+            [obj for obj in timer_priority_queue.TimerPriorityQueue.get_instance().user_map[userid] if type(obj) == timer.Timer]
         )
 
         if not user_timers:
@@ -122,7 +122,7 @@ class TimedCommands(commands.Cog, name="Timed Commands"):
         await ctx.send(embed=embed)
 
         # userid = ctx.message.author.id
-        # top_timer = cfg.timer_pqueue.peek()
+        # top_timer = timer_priority_queue.TimerPriorityQueue.get_instance().peek()
         # await ctx.send(repr(top_timer))
 
     @commands.command(name="unset-timer", aliases=['ut'])
@@ -132,7 +132,7 @@ class TimedCommands(commands.Cog, name="Timed Commands"):
         # Identify users and fetch their timers
         userid = ctx.author.id
         user_timers = sorted(
-            [obj for obj in cfg.timer_pqueue.user_map[userid] if type(obj) == timer.Timer]
+            [obj for obj in timer_priority_queue.TimerPriorityQueue.get_instance().user_map[userid] if type(obj) == timer.Timer]
         )
 
         idx = int(idx)
@@ -152,7 +152,7 @@ class TimedCommands(commands.Cog, name="Timed Commands"):
             # delete from database
             target = user_timers[idx - 1]
             target.delete(target.message_id)
-            cfg.timer_pqueue.remove_timer(target.message_id)
+            timer_priority_queue.TimerPriorityQueue.get_instance().remove_timer(target.message_id)
 
             await ctx.send(embed=discord.Embed(
                 description="Timer deleted!",
@@ -166,8 +166,8 @@ class TimedCommands(commands.Cog, name="Timed Commands"):
         await self.unset_timer(ctx, str(1))
 
         # userid = ctx.message.author.id
-        # top_timer = cfg.timer_pqueue.peek()
-        # removed_top_timer = cfg.timer_pqueue.remove_timer(top_timer.message_id)
+        # top_timer = timer_priority_queue.TimerPriorityQueue.get_instance().peek()
+        # removed_top_timer = timer_priority_queue.TimerPriorityQueue.get_instance().remove_timer(top_timer.message_id)
         # await ctx.send(repr(removed_top_timer))
 
     @commands.command(name="timer-queue", aliases=['tq'])
@@ -177,7 +177,7 @@ class TimedCommands(commands.Cog, name="Timed Commands"):
         userid = ctx.author.id
 
         if userid in cfg.author_ids:
-            await ctx.send(repr(cfg.timer_pqueue.get_all_tasks()))
+            await ctx.send(repr(timer_priority_queue.TimerPriorityQueue.get_instance().get_all_tasks()))
         else:
             await ctx.send("Not authorized to use this command!")
 

@@ -1,4 +1,4 @@
-from utils import time_utils, config
+from utils import time_utils, config, timer_priority_queue
 from models import timer
 from datetime import timedelta as td
 import datetime as dt
@@ -54,7 +54,7 @@ class Reminder(timer.Timer):
         reminder_obj = Reminder(self.userid, self._msg, self._discord_message,
                                 _days_abbr[self._next_date.weekday()], self._hour, self._minute,
                                 (self.recurrence - (-1 if limited_repetitions else 0)), self._tz)
-        config.timer_pqueue.add_task(reminder_obj)
+        timer_priority_queue.TimerPriorityQueue.get_instance().add_task(reminder_obj)
 
         #reminder_obj.update(['message_id', 'userid', 'channel_id', 'start_time', 'end_time', 'msg', 'recurrence'], self.message_id)
         reminder_obj.update(['start_time', 'end_time', 'msg', 'recurrence'], self.message_id)
