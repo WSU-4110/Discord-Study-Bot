@@ -3,7 +3,7 @@ import datetime as dt
 from models import timer, reminder, note
 from keep_alive import keep_alive
 from discord.ext import commands
-from utils import database_utils, async_tasks, config
+from utils import database_utils, async_tasks, config, timer_priority_queue
 
 bot = commands.Bot(
     command_prefix="!",  # Change to desired prefix
@@ -19,7 +19,7 @@ async def reinit_queue():
             if dt.datetime.now() <= end_time:
                 orig_channel = bot.get_channel(channel_id)
                 orig_message = await orig_channel.fetch_message(message_id)
-                config.timer_pqueue.add_task(
+                timer_priority_queue.TimerPriorityQueue.get_instance().add_task(
                     timer.Timer(user_id, 0, msg, orig_message, start_time=start_time, end_time=end_time))
         except:
             pass
@@ -34,7 +34,7 @@ async def reinit_queue():
                 content = orig_message.content.split(' ')
                 rem = reminder.Reminder(user_id, msg, orig_message, content[1], int(content[2]), int(content[3]),
                                         recurrence)
-                config.timer_pqueue.add_task(rem)
+                timer_priority_queue.TimerPriorityQueue.get_instance().add_task(rem)
         except:
             pass
 

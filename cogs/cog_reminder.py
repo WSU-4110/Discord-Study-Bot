@@ -1,6 +1,6 @@
 import discord
 from discord.ext import commands
-from utils import config as cfg, time_utils
+from utils import config as cfg, time_utils, timer_priority_queue
 from models import reminder
 
 
@@ -65,7 +65,7 @@ class ReminderCommands(commands.Cog, name="Reminder Commands"):
             reminder_obj = reminder.Reminder(userid, msg_str, ctx.message, day, hour, minute, 0)
 
         reminder_obj.insert(['message_id', 'userid', 'channel_id', 'start_time', 'end_time', 'msg', 'recurrence'])
-        cfg.timer_pqueue.add_task(reminder_obj)
+        timer_priority_queue.TimerPriorityQueue.get_instance().add_task(reminder_obj)
 
         # output
         embed = discord.Embed(title="Reminder Created!",
@@ -129,7 +129,7 @@ class ReminderCommands(commands.Cog, name="Reminder Commands"):
 
         reminder_obj.insert(['message_id', 'userid', 'channel_id', 'start_time', 'end_time', 'msg', 'recurrence'])
 
-        cfg.timer_pqueue.add_task(reminder_obj)
+        timer_priority_queue.TimerPriorityQueue.get_instance().add_task(reminder_obj)
 
         # output
         embed = discord.Embed(title="Reminder Created!",
@@ -204,7 +204,7 @@ class ReminderCommands(commands.Cog, name="Reminder Commands"):
 
         reminder_obj.insert(['message_id', 'userid', 'channel_id', 'start_time', 'end_time', 'msg', 'recurrence'])
 
-        cfg.timer_pqueue.add_task(reminder_obj)
+        timer_priority_queue.TimerPriorityQueue.get_instance().add_task(reminder_obj)
 
         # output
         embed = discord.Embed(title="Reminder Created!",

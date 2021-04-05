@@ -1,8 +1,6 @@
-from utils import timer_priority_queue
 from collections import defaultdict as dd, namedtuple as nt
 from typing import *
 
-timer_pqueue = timer_priority_queue.TimerPriorityQueue()
 note_dict = dd(list)
 author_ids = [189533543993442304,
               154752622262353921,
