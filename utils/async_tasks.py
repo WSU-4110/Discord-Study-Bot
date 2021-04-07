@@ -1,6 +1,8 @@
 import asyncio
 import datetime as dt
 from utils import config, timer_priority_queue
+import discord
+from models import reminder
 
 
 async def handle_timers():
@@ -16,5 +18,16 @@ async def handle_timers():
             for timer in timers_to_fire:
                 if timer.pre_flight_for_deletion():
                     timer.delete(timer.message_id)
-                await timer.discord_message.channel.send(timer.formatted_discord_message(), embed=timer.embed())  # send the discord message for each timer
+                print(timer.discord_message.channel)
+                if timer.discord_message.channel.type is discord.ChannelType.private:
+                    await timer.discord_message.author.send(timer.formatted_discord_message(), embed=timer.embed())  # send the discord message for each timer
+                else:
+                    try:
+                        server = timer.discord_message.guild
+                        for role_id in timer.roles.split(' '):
+                            for member in server.members:
+                                if role_id in [role.mention for role in member.roles]:
+                                    await member.send(timer.formatted_discord_message(), embed=timer.embed())  # send the discord message for each user in the role
+                    except Exception as e:
+                        print(e)
         await asyncio.sleep(3)  # sleep for 10 seconds and check again
