@@ -7,10 +7,10 @@ import pytz
 
 _days_abbr = ['m', 't', 'w', 'th', 'f', 's', 'su']
 
-
+#checking branch
 class Reminder(timer.Timer):
     def __init__(self, userid: str, msg: str, discord_message, day: str, hour: int, minute: int,
-                 recurring_type: int = 0, tz='EST'):
+                 recurring_type: int = 0, tz='EST', roles=''):
         """Constructor sets up attributes and prepares deadline"""
         self._today = dt.datetime.now()
         self._current_year = self._today.year
@@ -21,6 +21,15 @@ class Reminder(timer.Timer):
         self._month = self._next_date.month
         self._tz = tz
         self.recurrence = recurring_type
+        self.roles = ''
+        starting_role_idx = 0
+        for ele in msg.split(' '):
+            if '<@&' in ele and '>' in ele:
+                self.roles += ele + ' '
+            else:
+                starting_role_idx += 1
+        self.roles = self.roles.strip()
+        msg = ' '.join(msg.split(' ')[:starting_role_idx])
 
         #  creates reminder notification time object
         deadline_date = time_utils.orig_to_utc(
@@ -57,7 +66,7 @@ class Reminder(timer.Timer):
         timer_priority_queue.TimerPriorityQueue.get_instance().add_task(reminder_obj)
 
         #reminder_obj.update(['message_id', 'userid', 'channel_id', 'start_time', 'end_time', 'msg', 'recurrence'], self.message_id)
-        reminder_obj.update(['start_time', 'end_time', 'msg', 'recurrence'], self.message_id)
+        reminder_obj.update(['start_time', 'end_time', 'msg', 'recurrence', 'roles'], self.message_id)
 
         # override methods below
     def pre_flight_for_deletion(self):
