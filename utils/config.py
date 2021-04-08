@@ -2,6 +2,10 @@ from collections import defaultdict as dd, namedtuple as nt
 from typing import *
 
 note_dict = dd(list)
+
+ticket_channel_dict = {}
+server_ticket_ctgs = {}
+
 author_ids = [189533543993442304,
               154752622262353921,
               667203504196026422,
