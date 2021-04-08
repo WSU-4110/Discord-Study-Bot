@@ -11,7 +11,7 @@ class ToDoListCommands(commands.Cog, name="ToDoList Commands"):
     def __init__(self, bot):
         self.bot = bot
 
-    @commands.command(name="create-item", aliases=["ci"])  # command to create a note
+    @commands.command(name="create-item", aliases=["todo"])  # command to create a note
     async def create_item(self, ctx, time: str, *msg: str):
         userid = ctx.author.id
 

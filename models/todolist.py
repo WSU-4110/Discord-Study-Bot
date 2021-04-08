@@ -65,7 +65,7 @@ class ToDoList():
     def formatted_discord_message(self):
         """ Returns message sent when Timer instance is activated. """
 
-        return f"Alerting{self.discord_message.author.mention}!"
+        return f"Alerting {self.discord_message.author.mention}"
 
     def time_remaining(self):
         """ Returns remaining time until Timer activation. """
