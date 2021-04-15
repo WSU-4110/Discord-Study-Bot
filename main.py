@@ -1,13 +1,16 @@
 import os
 import datetime as dt
+from dotenv import load_dotenv
 from models import timer, reminder, note
 from keep_alive import keep_alive
+import discord
 from discord.ext import commands
 from utils import database_utils, async_tasks, config, timer_priority_queue
 
 bot = commands.Bot(
-    command_prefix="!",  # Change to desired prefix
-    case_insensitive=True  # Commands aren't case-sensitive
+    command_prefix="ss!",  # Change to desired prefix
+    case_insensitive=True,  # Commands aren't case-sensitive
+    intents=discord.Intents.all()
 )
 
 
@@ -74,5 +77,6 @@ if __name__ == '__main__':  # Ensures this is the file being ran
         bot.load_extension(extension)  # Loads every extension.
 
 keep_alive()  # Starts a webserver to be pinged.
-token = os.environ.get("DISCORD_BOT_SECRET")
+load_dotenv()
+token = os.getenv("DISCORD_BOT_SECRET")
 bot.run(token)  # Starts the bot

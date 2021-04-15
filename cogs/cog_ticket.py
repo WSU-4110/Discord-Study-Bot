@@ -68,7 +68,7 @@ class TicketCommands(commands.Cog, name='Ticket Commands'):
                 description="Took too long to respond!",
                 colour=cfg.colors.TIMEOUT
             ))
-            ticket_channel.delete()
+            await ticket_channel.delete()
             return
 
         r_prompt = await ticket_channel.send(embed=discord.Embed(
@@ -84,7 +84,7 @@ class TicketCommands(commands.Cog, name='Ticket Commands'):
                 description="Took too long to respond!",
                 colour=cfg.colors.TIMEOUT
             ))
-            ticket_channel.delete()
+            await ticket_channel.delete()
             return
 
         question = q_response.content
