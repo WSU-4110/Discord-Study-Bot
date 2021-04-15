@@ -1,7 +1,5 @@
-import asyncio
 import os
 import time
-import datetime as dt
 from datetime import timedelta as td
 import pytest
 from typing import Tuple, List
@@ -16,7 +14,7 @@ load_dotenv()
 DISCORD_EMAIL = os.getenv('TEST_USER')
 DISCORD_PASSWORD = os.getenv('TEST_PASS')
 
-LOAD_WAIT_TIME = 5
+LOAD_WAIT_TIME = 6
 REQUEST_WAIT_TIME = 2
 COMMAND_WAIT_TIME = 60
 
@@ -41,7 +39,9 @@ MENTION = "@" + NAME
 
 @pytest.fixture(scope="session")
 def driver():
-    driver = webdriver.Chrome()  # initiate a webdriver instance through Selenium
+    options = webdriver.ChromeOptions()
+    options.add_experimental_option('excludeSwitches', ['enable-logging'])
+    driver = webdriver.Chrome(options=options)  # initiate a webdriver instance through Selenium
     driver.get('https://discord.com/app')  # go to Discord's login page
     # enter email
     driver.find_element_by_xpath(
@@ -57,13 +57,6 @@ def driver():
     time.sleep(REQUEST_WAIT_TIME)  # wait for request to process
     yield driver  # allow for tests to run
     driver.quit()  # teardown by quitting the webdriver instance
-
-
-'''
-def test_unit_test_channel(driver: webdriver.Chrome):
-    text = driver.find_element_by_xpath('/html/body/div/div[2]/div/div[2]/div/div/div/div[2]/div[2]/div[2]/main/div[1]/div/div/div/div[1]/h1').text
-    assert text == 'Welcome to #unit-testing!'
-'''
 
 
 def send_text_input(driver: webdriver.Chrome, command: str):
@@ -102,162 +95,171 @@ def get_latest_titled_embed_field_text(driver: webdriver.Chrome) -> Tuple[str, L
     return message_title, message_field_text
 
 
-# def test_set_timer(driver: webdriver.Chrome):
-#     driver.get(UNIT_TEST_CHANNEL_URL)
-#     time.sleep(LOAD_WAIT_TIME)
-#
-#     # Clear timers
-#     send_text_input(driver, 'ss!unset-all-timers')
-#     time.sleep(REQUEST_WAIT_TIME)
-#
-#     # Test non numeric duration input
-#     send_text_input(driver, 'ss!set-timer hi not-a-number')
-#     time.sleep(REQUEST_WAIT_TIME)
-#     embed_text = get_latest_embed_text(driver)
-#     assert embed_text == "Non-numeric timer duration given!"
-#
-#     # Test numeric duration input out of range
-#     send_text_input(driver, 'ss!set-timer 300 toolong')
-#     time.sleep(REQUEST_WAIT_TIME)
-#     embed_text = get_latest_embed_text(driver)
-#     assert embed_text == "Timer duration not in acceptable range! [1 .. 120]"
-#
-#     # Test correct input
-#     send_text_input(driver, 'ss!set-timer 1 working')
-#     time.sleep(REQUEST_WAIT_TIME)
-#     embed_text = get_latest_embed_text(driver)
-#     assert embed_text == "Timer created!"
-#
-#     # Testing that timer fired properly (not required for this unit test, responsibility falls on async_tasks)
-#     # driver.get(DM_CHANNEL_URL)
-#     # time.sleep(REQUEST_WAIT_TIME)
-#     # time.sleep(COMMAND_WAIT_TIME)
-#     # message_text = get_latest_message_text(driver)
-#     # embed_title, embed_text = get_latest_titled_embed_text(driver)
-#     # assert all([text in message_text for text in ("Alerting", MENTION)])
-#     # assert embed_title == "Timer Expired!"
-#     # assert embed_text == "working"
-#
-#
-# def test_highest_timer(driver: webdriver.Chrome):
-#     driver.get(UNIT_TEST_CHANNEL_URL)
-#     time.sleep(LOAD_WAIT_TIME)
-#
-#     # Clear timers
-#     send_text_input(driver, 'ss!unset-all-timers')
-#     time.sleep(REQUEST_WAIT_TIME)
-#
-#     # Test for empty queue
-#     send_text_input(driver, 'ss!highest-timer')
-#     time.sleep(REQUEST_WAIT_TIME)
-#     embed_text = get_latest_embed_text(driver)
-#     assert embed_text == "No timers found!"
-#
-#     # Add timers to queue
-#     send_text_input(driver, 'ss!set-timer 3 three')
-#     time.sleep(REQUEST_WAIT_TIME)
-#     send_text_input(driver, 'ss!set-timer 2 two')
-#     time.sleep(REQUEST_WAIT_TIME)
-#     send_text_input(driver, 'ss!set-timer 1 one')
-#     time.sleep(REQUEST_WAIT_TIME)
-#
-#     # Test correctness
-#     send_text_input(driver, 'ss!highest-timer')
-#     time.sleep(REQUEST_WAIT_TIME)
-#     embed_title, embed_field_text = get_latest_titled_embed_field_text(driver)
-#     assert embed_title == "Detailed Timer Information"
-#     assert embed_field_text[0] == "one"
-#
-#
-# def test_list_timers(driver: webdriver.Chrome):
-#     driver.get(UNIT_TEST_CHANNEL_URL)
-#     time.sleep(LOAD_WAIT_TIME)
-#
-#     # Clear timers
-#     send_text_input(driver, 'ss!unset-all-timers')
-#     time.sleep(REQUEST_WAIT_TIME)
-#
-#     # Test for empty queue
-#     send_text_input(driver, 'ss!list-timers')
-#     time.sleep(REQUEST_WAIT_TIME)
-#     embed_text = get_latest_embed_text(driver)
-#     assert embed_text == "No timers found!"
-#
-#     # Add timers to queue
-#     send_text_input(driver, 'ss!set-timer 3 three')
-#     time.sleep(REQUEST_WAIT_TIME)
-#     send_text_input(driver, 'ss!set-timer 2 two')
-#     time.sleep(REQUEST_WAIT_TIME)
-#     send_text_input(driver, 'ss!set-timer 1 one')
-#     time.sleep(REQUEST_WAIT_TIME)
-#
-#     # Test for empty queue
-#     send_text_input(driver, 'ss!list-timers')
-#     time.sleep(REQUEST_WAIT_TIME)
-#     embed_title, embed_field_text = get_latest_titled_embed_field_text(driver)
-#     assert embed_title == "Active Timers"
-#     assert all([embed_field_text[i] == t for i, t in zip(range(0, 9, 3), ("one", "two", "three"))])
-#
-#     send_text_input(driver, 'ss!list-timers 2')
-#     time.sleep(REQUEST_WAIT_TIME)
-#     embed_title, embed_field_text = get_latest_titled_embed_field_text(driver)
-#     assert embed_title == "Active Timers"
-#     assert all([embed_field_text[i] == t for i, t in zip(range(0, 6, 3), ("one", "two"))])
-#
-#     send_text_input(driver, 'ss!list-timers -2')
-#     time.sleep(REQUEST_WAIT_TIME)
-#     embed_title, embed_field_text = get_latest_titled_embed_field_text(driver)
-#     assert embed_title == "Active Timers"
-#     assert all([embed_field_text[i] == t for i, t in zip(range(0, 3, 3), ("one",))])
-#
-#
-# def test_unset_timer(driver: webdriver.Chrome):
-#     driver.get(UNIT_TEST_CHANNEL_URL)
-#     time.sleep(REQUEST_WAIT_TIME)
-#
-#     # Clear timers
-#     send_text_input(driver, 'ss!unset-all-timers')
-#     time.sleep(REQUEST_WAIT_TIME)
-#
-#     # Test for empty queue
-#     send_text_input(driver, 'ss!unset-timer 1')
-#     time.sleep(REQUEST_WAIT_TIME)
-#     embed_text = get_latest_embed_text(driver)
-#     assert embed_text == "No timers found!"
-#
-#     # Add timers to queue
-#     send_text_input(driver, 'ss!set-timer 3 three')
-#     time.sleep(REQUEST_WAIT_TIME)
-#     send_text_input(driver, 'ss!set-timer 2 two')
-#     time.sleep(REQUEST_WAIT_TIME)
-#     send_text_input(driver, 'ss!set-timer 1 one')
-#     time.sleep(REQUEST_WAIT_TIME)
-#
-#     # Test non numeric duration input
-#     send_text_input(driver, 'ss!unset-timer not-a-number')
-#     time.sleep(REQUEST_WAIT_TIME)
-#     embed_text = get_latest_embed_text(driver)
-#     assert embed_text == "Non-numeric index given!"
-#
-#     # Test numeric duration input out of range
-#     send_text_input(driver, 'ss!unset-timer 300')
-#     time.sleep(REQUEST_WAIT_TIME)
-#     embed_text = get_latest_embed_text(driver)
-#     assert embed_text == "Index input not in range! Range [1 .. 3], got 300"
-#
-#     # Test correctness
-#     send_text_input(driver, 'ss!unset-timer 2')
-#     time.sleep(REQUEST_WAIT_TIME)
-#     embed_text = get_latest_embed_text(driver)
-#     assert embed_text == "Timer deleted!"
+def test_set_timer(driver: webdriver.Chrome):
+    driver.get(UNIT_TEST_CHANNEL_URL)
+    time.sleep(LOAD_WAIT_TIME)
+
+    # Clear timers
+    send_text_input(driver, 'ss!unset-all-timers')
+    time.sleep(REQUEST_WAIT_TIME)
+
+    # Test non numeric duration input
+    send_text_input(driver, 'ss!set-timer hi not-a-number')
+    time.sleep(REQUEST_WAIT_TIME)
+    embed_text = get_latest_embed_text(driver)
+    assert embed_text == "Non-numeric timer duration given!"
+
+    # Test numeric duration input out of range
+    send_text_input(driver, 'ss!set-timer 300 toolong')
+    time.sleep(REQUEST_WAIT_TIME)
+    embed_text = get_latest_embed_text(driver)
+    assert embed_text == "Timer duration not in acceptable range! [1 .. 120]"
+
+    # Test correct input
+    send_text_input(driver, 'ss!set-timer 1 working')
+    time.sleep(REQUEST_WAIT_TIME)
+    embed_text = get_latest_embed_text(driver)
+    assert embed_text == "Timer created!"
+
+    # Testing that timer fired properly (not required for this unit test, responsibility falls on async_tasks)
+    # driver.get(DM_CHANNEL_URL)
+    # time.sleep(REQUEST_WAIT_TIME)
+    # time.sleep(COMMAND_WAIT_TIME)
+    # message_text = get_latest_message_text(driver)
+    # embed_title, embed_text = get_latest_titled_embed_text(driver)
+    # assert all([text in message_text for text in ("Alerting", MENTION)])
+    # assert embed_title == "Timer Expired!"
+    # assert embed_text == "working"
+
+
+def test_highest_timer(driver: webdriver.Chrome):
+    driver.get(UNIT_TEST_CHANNEL_URL)
+    time.sleep(LOAD_WAIT_TIME)
+
+    # Clear timers
+    send_text_input(driver, 'ss!unset-all-timers')
+    time.sleep(REQUEST_WAIT_TIME)
+
+    # Test for empty queue
+    send_text_input(driver, 'ss!highest-timer')
+    time.sleep(REQUEST_WAIT_TIME)
+    embed_text = get_latest_embed_text(driver)
+    assert embed_text == "No timers found!"
+
+    # Add timers to queue
+    send_text_input(driver, 'ss!set-timer 3 three')
+    time.sleep(REQUEST_WAIT_TIME)
+    send_text_input(driver, 'ss!set-timer 2 two')
+    time.sleep(REQUEST_WAIT_TIME)
+    send_text_input(driver, 'ss!set-timer 1 one')
+    time.sleep(REQUEST_WAIT_TIME)
+
+    # Test correctness
+    send_text_input(driver, 'ss!highest-timer')
+    time.sleep(REQUEST_WAIT_TIME)
+    embed_title, embed_field_text = get_latest_titled_embed_field_text(driver)
+    assert embed_title == "Detailed Timer Information"
+    assert embed_field_text[0] == "one"
+
+
+def test_list_timers(driver: webdriver.Chrome):
+    driver.get(UNIT_TEST_CHANNEL_URL)
+    time.sleep(LOAD_WAIT_TIME)
+
+    # Clear timers
+    send_text_input(driver, 'ss!unset-all-timers')
+    time.sleep(REQUEST_WAIT_TIME)
+
+    # Test for empty queue
+    send_text_input(driver, 'ss!list-timers')
+    time.sleep(REQUEST_WAIT_TIME)
+    embed_text = get_latest_embed_text(driver)
+    assert embed_text == "No timers found!"
+
+    # Add timers to queue
+    send_text_input(driver, 'ss!set-timer 3 three')
+    time.sleep(REQUEST_WAIT_TIME)
+    send_text_input(driver, 'ss!set-timer 2 two')
+    time.sleep(REQUEST_WAIT_TIME)
+    send_text_input(driver, 'ss!set-timer 1 one')
+    time.sleep(REQUEST_WAIT_TIME)
+
+    # Test for empty queue
+    send_text_input(driver, 'ss!list-timers')
+    time.sleep(REQUEST_WAIT_TIME)
+    embed_title, embed_field_text = get_latest_titled_embed_field_text(driver)
+    assert embed_title == "Active Timers"
+    assert all([embed_field_text[i] == t for i, t in zip(range(0, 9, 3), ("one", "two", "three"))])
+
+    send_text_input(driver, 'ss!list-timers 2')
+    time.sleep(REQUEST_WAIT_TIME)
+    embed_title, embed_field_text = get_latest_titled_embed_field_text(driver)
+    assert embed_title == "Active Timers"
+    assert all([embed_field_text[i] == t for i, t in zip(range(0, 6, 3), ("one", "two"))])
+
+    send_text_input(driver, 'ss!list-timers -2')
+    time.sleep(REQUEST_WAIT_TIME)
+    embed_title, embed_field_text = get_latest_titled_embed_field_text(driver)
+    assert embed_title == "Active Timers"
+    assert all([embed_field_text[i] == t for i, t in zip(range(0, 3, 3), ("one",))])
+
+
+def test_unset_timer(driver: webdriver.Chrome):
+    driver.get(UNIT_TEST_CHANNEL_URL)
+    time.sleep(REQUEST_WAIT_TIME)
+
+    # Clear timers
+    send_text_input(driver, 'ss!unset-all-timers')
+    time.sleep(REQUEST_WAIT_TIME)
+
+    # Test for empty queue
+    send_text_input(driver, 'ss!unset-timer 1')
+    time.sleep(REQUEST_WAIT_TIME)
+    embed_text = get_latest_embed_text(driver)
+    assert embed_text == "No timers found!"
+
+    # Add timers to queue
+    send_text_input(driver, 'ss!set-timer 3 three')
+    time.sleep(REQUEST_WAIT_TIME)
+    send_text_input(driver, 'ss!set-timer 2 two')
+    time.sleep(REQUEST_WAIT_TIME)
+    send_text_input(driver, 'ss!set-timer 1 one')
+    time.sleep(REQUEST_WAIT_TIME)
+
+    # Test non numeric duration input
+    send_text_input(driver, 'ss!unset-timer not-a-number')
+    time.sleep(REQUEST_WAIT_TIME)
+    embed_text = get_latest_embed_text(driver)
+    assert embed_text == "Non-numeric index given!"
+
+    # Test numeric duration input out of range
+    send_text_input(driver, 'ss!unset-timer 300')
+    time.sleep(REQUEST_WAIT_TIME)
+    embed_text = get_latest_embed_text(driver)
+    assert embed_text == "Index input not in range! Range [1 .. 3], got 300"
+
+    # Test correctness
+    send_text_input(driver, 'ss!unset-timer 2')
+    time.sleep(REQUEST_WAIT_TIME)
+    embed_text = get_latest_embed_text(driver)
+    assert embed_text == "Timer deleted!"
 
 
 def test_time_remaining():
     my_timer = timer.Timer(USERID, 300, '', None)
     target_diff = td(minutes=4)
     time.sleep(COMMAND_WAIT_TIME)
-    assert my_timer.time_remaining() - target_diff < td(seconds=5)
+    assert abs(my_timer.time_remaining() - target_diff) < td(seconds=5)
 
 
-def test_colhex():
-    ...
+def test_hex_to_int():
+    assert cfg.hex_to_int('#552cae') == 0x552cae
+    assert cfg.hex_to_int('#e55186') == 0xe55186
+    assert cfg.hex_to_int('#ccfd9d') == 0xccfd9d
+    assert cfg.hex_to_int('#59ef14') == 0x59ef14
+    assert cfg.hex_to_int('#e6855b') == 0xe6855b
+    assert cfg.hex_to_int('#cd89af') == 0xcd89af
+    assert cfg.hex_to_int('#eeafac') == 0xeeafac
+    assert cfg.hex_to_int('#670d1f') == 0x670d1f
+    assert cfg.hex_to_int('#34bfa7') == 0x34bfa7
+    assert cfg.hex_to_int('#22f91e') == 0x22f91e

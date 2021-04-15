@@ -16,8 +16,8 @@ author_ids = [189533543993442304,
 
 
 def hex_to_int(colhex: str) -> int:
-    inthex = int(colhex.replace('#', ''), 16)
-    intcol = int(hex(inthex), 0)
+    inthex = colhex.replace('#', '0x')
+    intcol = int(inthex, 0)
 
     return intcol
 
