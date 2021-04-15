@@ -61,3 +61,12 @@ def test_create_todo(driver: webdriver.Chrome):
     messages = driver.find_element_by_xpath(MESSAGE_CONTAINER_XPATH).find_elements_by_class_name(TEXT_MESSAGE_CLASS)
     message_text = messages[-1].find_element_by_class_name(EMBED_MESSAGE_CLASS).find_element_by_class_name(EMBED_MESSAGE_BODY_CLASS).text
     assert message_text == 'ToDoList Item created!'
+    driver.get(DM_CHANNEL_URL)
+    time.sleep(REQUEST_WAIT_TIME)
+    time.sleep(COMMAND_WAIT_TIME)
+    messages = driver.find_elements_by_class_name(TEXT_MESSAGE_CLASS)
+    message_text = messages[-1].find_element_by_class_name(TEXT_MESSAGE_BODY_CLASS).text
+    assert 'To Do Item' in message_text
+    driver.get(UNIT_TEST_CHANNEL_URL)
+    time.sleep(REQUEST_WAIT_TIME)
+
