@@ -71,9 +71,9 @@ class DevCommands(commands.Cog, name='Developer Commands'):
         base_string += "\n```"
         await ctx.send(base_string)
 
-        @commands.command(name="ping")
-        async def ping(self, ctx):
-            await ctx.send("pong!")
+    @commands.command(name="ping")
+    async def ping(self, ctx):
+        await ctx.send("pong!")
 
 
 def setup(bot):
