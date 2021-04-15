@@ -1,38 +1,52 @@
 import time
-
 import pytest
 from selenium import webdriver
 from selenium.webdriver.common.keys import Keys
+from dotenv import load_dotenv
+import os
+from utils import database_utils
 
-
-DISCORD_EMAIL = 'go2977@wayne.edu'
-DISCORD_PASSWORD = 'alph@bet@123'
+load_dotenv()
+DISCORD_EMAIL = os.getenv("TEST_EMAIL")
+DISCORD_PASSWORD = os.getenv("TEST_PASSWORD")
 REQUEST_WAIT_TIME = 5
 COMMAND_WAIT_TIME = 60
 
-UNIT_TEST_CHANNEL_URL = 'https://discord.com/channels/801966497235730472/828825916573745185'
-DM_CHANNEL_URL = 'https://discord.com/channels/@me/831667630145536030'
+UNIT_TEST_CHANNEL_URL = 'https://discord.com/channels/@me/832128070194036736'  # 'https://discord.com/channels/801966497235730472/828825916573745185'
+# DM_CHANNEL_URL = 'https://discord.com/channels/@me/832084348760752159'  # CHANGE
 
-TEXT_INPUT_XPATH = '/html/body/div/div[2]/div/div[2]/div/div/div/div[2]/div[2]/div[2]/main/form/div/div/div/div/div/div[3]/div[2]'
+DM_TEXT_INPUT_XPATH = '/html/body/div/div[2]/div/div[2]/div/div/div/div[2]/div[2]/div[2]/main/form/div/div/div/div[3]/div[2]/div'  # '/html/body/div/div[2]/div/div[2]/div/div/div/div[2]/div[2]/div[2]/main/form/div/div/div/div[3]/div[2]/div'
+
+# TEXT_INPUT_XPATH = '/html/body/div/div[2]/div/div[2]/div/div/div/div[2]/div[2]/div[2]/main/form/div/div/div/div/div/div[3]/div[2]'
 MESSAGE_CONTAINER_XPATH = '/html/body/div/div[2]/div/div[2]/div/div/div/div[2]/div[2]/div[2]/main/div[1]/div/div/div'
 
 TEXT_MESSAGE_CLASS = 'message-2qnXI6'
 TEXT_MESSAGE_BODY_CLASS = 'markup-2BOw-j'
 
-EMBED_MESSAGE_CLASS = 'grid-1nZz7S'
+EMBED_MESSAGE_CLASS = 'grid-1nZz7S'  # original'grid-1nZz7S'
 EMBED_MESSAGE_BODY_CLASS = 'embedDescription-1Cuq9a'
+EMBED_TITLE_CLASS = 'embedTitle-3OXDkz'
+EMBED_FIELD_VALUE = 'embedFieldValue-nELq2s'
 
 
 @pytest.fixture(scope="session")
 def driver():
+    options = webdriver.ChromeOptions()
+    options.add_argument('--ignore-certificate-errors')
+    options.add_argument('--ignore-ssl-errors')
     driver = webdriver.Chrome()  # initiate a webdriver instance through Selenium
     driver.get('https://discord.com/app')  # go to Discord's login page
     # enter email
-    driver.find_element_by_xpath('/html/body/div/div[2]/div/div[2]/div/div/form/div/div/div[1]/div[3]/div[1]/div/div[2]/input').send_keys(DISCORD_EMAIL)
+    driver.find_element_by_xpath(
+        '/html/body/div/div[2]/div/div[2]/div/div/form/div/div/div[1]/div[3]/div[1]/div/div[2]/input').send_keys(
+        DISCORD_EMAIL)
     # enter password
-    driver.find_element_by_xpath('/html/body/div/div[2]/div/div[2]/div/div/form/div/div/div[1]/div[3]/div[2]/div/input').send_keys(DISCORD_PASSWORD)
+    driver.find_element_by_xpath(
+        '/html/body/div/div[2]/div/div[2]/div/div/form/div/div/div[1]/div[3]/div[2]/div/input').send_keys(
+        DISCORD_PASSWORD)
     # click login button
-    driver.find_element_by_xpath('/html/body/div/div[2]/div/div[2]/div/div/form/div/div/div[1]/div[3]/button[2]').click()
+    driver.find_element_by_xpath(
+        '/html/body/div/div[2]/div/div[2]/div/div/form/div/div/div[1]/div[3]/button[2]').click()
     time.sleep(REQUEST_WAIT_TIME)  # wait for request to process
     driver.get(UNIT_TEST_CHANNEL_URL)
     time.sleep(REQUEST_WAIT_TIME)
@@ -47,17 +61,92 @@ def test_unit_test_channel(driver: webdriver.Chrome):
 '''
 
 
-def test_ping_command(driver: webdriver.Chrome):
-    driver.find_element_by_xpath(TEXT_INPUT_XPATH).send_keys('lb!ping' + Keys.RETURN)
+# Tests command and creation of one-time repeated reminders
+def test_create_reminder(driver: webdriver.Chrome):
+    time.sleep(REQUEST_WAIT_TIME)
+    driver.find_element_by_xpath(DM_TEXT_INPUT_XPATH).send_keys('b!sr' + Keys.RETURN)
+    time.sleep(REQUEST_WAIT_TIME)
+    driver.find_element_by_xpath(DM_TEXT_INPUT_XPATH).send_keys('th' + Keys.RETURN)
+    time.sleep(REQUEST_WAIT_TIME)
+    driver.find_element_by_xpath(DM_TEXT_INPUT_XPATH).send_keys('17 10' + Keys.RETURN)
+    time.sleep(REQUEST_WAIT_TIME)
+    driver.find_element_by_xpath(DM_TEXT_INPUT_XPATH).send_keys('Set Reminder Test' + Keys.RETURN)
     time.sleep(REQUEST_WAIT_TIME)
     messages = driver.find_element_by_xpath(MESSAGE_CONTAINER_XPATH).find_elements_by_class_name(TEXT_MESSAGE_CLASS)
-    message_text = messages[-1].find_element_by_class_name(TEXT_MESSAGE_BODY_CLASS).text
-    assert message_text == 'pong!'
+    message_text = messages[-1].find_element_by_class_name(EMBED_MESSAGE_CLASS).find_element_by_class_name(
+        EMBED_TITLE_CLASS).text
+    print(message_text)
+    time.sleep(REQUEST_WAIT_TIME)
+    assert message_text == 'Reminder Created!'
 
 
-def test_create_todo(driver: webdriver.Chrome):
-    driver.find_element_by_xpath(TEXT_INPUT_XPATH).send_keys('lb!create-item 1 test' + Keys.RETURN)
+# Tests command and creation of user defined number of repeated reminders
+def test_create_repeating_reminder(driver: webdriver.Chrome):
+    time.sleep(REQUEST_WAIT_TIME)
+    driver.find_element_by_xpath(DM_TEXT_INPUT_XPATH).send_keys('b!srr' + Keys.RETURN)
+    time.sleep(REQUEST_WAIT_TIME)
+    driver.find_element_by_xpath(DM_TEXT_INPUT_XPATH).send_keys('th' + Keys.RETURN)
+    time.sleep(REQUEST_WAIT_TIME)
+    driver.find_element_by_xpath(DM_TEXT_INPUT_XPATH).send_keys('17 24' + Keys.RETURN)
+    time.sleep(REQUEST_WAIT_TIME)
+    driver.find_element_by_xpath(DM_TEXT_INPUT_XPATH).send_keys('Set Reminder Test' + Keys.RETURN)
+    time.sleep(REQUEST_WAIT_TIME)
+    driver.find_element_by_xpath(DM_TEXT_INPUT_XPATH).send_keys('3' + Keys.RETURN)
     time.sleep(REQUEST_WAIT_TIME)
     messages = driver.find_element_by_xpath(MESSAGE_CONTAINER_XPATH).find_elements_by_class_name(TEXT_MESSAGE_CLASS)
-    message_text = messages[-1].find_element_by_class_name(EMBED_MESSAGE_CLASS).find_element_by_class_name(EMBED_MESSAGE_BODY_CLASS).text
-    assert message_text == 'ToDoList Item created!'
+    message_text = messages[-1].find_element_by_class_name(EMBED_MESSAGE_CLASS).find_element_by_class_name(
+        EMBED_TITLE_CLASS).text
+    print(message_text)
+    time.sleep(REQUEST_WAIT_TIME)
+    assert message_text == 'Reminder Created!'
+
+
+# Tests command and creation of infinite repeated reminders
+def test_create_infinite_reminder(driver: webdriver.Chrome):
+    time.sleep(REQUEST_WAIT_TIME)
+    driver.find_element_by_xpath(DM_TEXT_INPUT_XPATH).send_keys('b!sir' + Keys.RETURN)
+    time.sleep(REQUEST_WAIT_TIME)
+    driver.find_element_by_xpath(DM_TEXT_INPUT_XPATH).send_keys('th' + Keys.RETURN)
+    time.sleep(REQUEST_WAIT_TIME)
+    driver.find_element_by_xpath(DM_TEXT_INPUT_XPATH).send_keys('17 31' + Keys.RETURN)
+    time.sleep(REQUEST_WAIT_TIME)
+    driver.find_element_by_xpath(DM_TEXT_INPUT_XPATH).send_keys('Set Reminder Test' + Keys.RETURN)
+    time.sleep(REQUEST_WAIT_TIME)
+    messages = driver.find_element_by_xpath(MESSAGE_CONTAINER_XPATH).find_elements_by_class_name(TEXT_MESSAGE_CLASS)
+    message_text = messages[-1].find_element_by_class_name(EMBED_MESSAGE_CLASS).find_element_by_class_name(
+        EMBED_TITLE_CLASS).text
+    print(message_text)
+    time.sleep(REQUEST_WAIT_TIME)
+    assert message_text == 'Reminder Created!'
+
+
+# Tests instantiation of reminder is one week from day of creation
+def test_next_reminder_date(driver: webdriver.Chrome):
+    time.sleep(REQUEST_WAIT_TIME)
+    driver.find_element_by_xpath(DM_TEXT_INPUT_XPATH).send_keys('b!sr' + Keys.RETURN)
+    time.sleep(REQUEST_WAIT_TIME)
+    driver.find_element_by_xpath(DM_TEXT_INPUT_XPATH).send_keys('th' + Keys.RETURN)
+    time.sleep(REQUEST_WAIT_TIME)
+    driver.find_element_by_xpath(DM_TEXT_INPUT_XPATH).send_keys('17 55' + Keys.RETURN)
+    time.sleep(REQUEST_WAIT_TIME)
+    driver.find_element_by_xpath(DM_TEXT_INPUT_XPATH).send_keys('Set Reminder Test' + Keys.RETURN)
+    time.sleep(REQUEST_WAIT_TIME)
+    time.sleep(COMMAND_WAIT_TIME)
+    messages = driver.find_element_by_xpath(MESSAGE_CONTAINER_XPATH).find_elements_by_class_name(TEXT_MESSAGE_CLASS)
+    message_text = messages[-1].find_element_by_class_name(EMBED_MESSAGE_CLASS).find_element_by_class_name(
+        EMBED_FIELD_VALUE).text
+    print(message_text)
+    assert 'Thu Apr 22' in message_text
+
+
+# Tests query execution
+def test_database_utils_exec():
+    statement = 'SELECT COUNT(*) FROM NOTES'
+    result = database_utils.exec(statement)
+    print(result, result[0])
+    assert result[0][0] > 0
+
+
+# Tests sql database connectivity
+def test_database_connection():
+    assert database_utils.connection() != None
