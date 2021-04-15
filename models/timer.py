@@ -6,7 +6,7 @@ import discord
 
 
 class Timer(base_db_model.BaseDBModel):
-    def __init__(self, userid: str, td_secs: int, msg: str, discord_message, include_seconds=True, start_time=None,
+    def __init__(self, userid: str, td_secs: int, msg: str, discord_message=None, include_seconds=True, start_time=None,
                  end_time=None):
         """ Initialize attributes of Timer instance. """
 
@@ -22,8 +22,10 @@ class Timer(base_db_model.BaseDBModel):
             self._end_time = time_utils.str_to_datetime(self._end_time.strftime("%Y-%m-%d %H:%M"))
         self._msg = msg  # remaining message text
         self._discord_message = discord_message  # message object
-        self.message_id = self._discord_message.id
-        self.channel_id = self._discord_message.channel.id
+
+        if discord_message is not None:
+            self.message_id = self._discord_message.id
+            self.channel_id = self._discord_message.channel.id
 
     def __repr__(self):
         """ Get string representation of Timer instance information. """

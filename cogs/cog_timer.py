@@ -15,11 +15,28 @@ class TimedCommands(commands.Cog, name="Timed Commands"):
     async def set_timer(self, ctx, time: str, *msg: str):
         """ Creates a Timer instance. """
 
-        userid = ctx.author.id
+        user = ctx.author
+
+        # Verify time inputted is correct
+        try:
+            time = int(time)
+        except ValueError:
+            await ctx.send(embed=discord.Embed(
+                description="Non-numeric timer duration given!",
+                colour=cfg.colors.ERROR
+            ))
+            return
+
+        if not 1 <= time <= 120:
+            await ctx.send(embed=discord.Embed(
+                description="Timer duration not in acceptable range! [1 .. 120]",
+                colour=cfg.colors.ERROR
+            ))
+            return
 
         # Timer creation
         msg = ' '.join(msg)
-        timer_obj = timer.Timer(userid=userid, td_secs=int(time) * 60, msg=msg, discord_message=ctx.message)
+        timer_obj = timer.Timer(userid=user.id, td_secs=int(time) * 60, msg=msg, discord_message=ctx.message)
 
         # P-queue and database update
         timer_priority_queue.TimerPriorityQueue.get_instance().add_task(timer_obj)
@@ -29,15 +46,15 @@ class TimedCommands(commands.Cog, name="Timed Commands"):
             description="Timer created!\n",
             colour=cfg.colors.SUCCESS
         ))
-        # await async_tasks.handle_timers()
 
     @commands.command(name="list-timers", aliases=['lt'])
     async def list_timers(self, ctx, limit=None):
 
         # Identify users and fetch their timers
-        userid = ctx.author.id
+        user = ctx.author
         user_timers = sorted(
-            [obj for obj in timer_priority_queue.TimerPriorityQueue.get_instance().user_map[userid] if type(obj) == timer.Timer]
+            [obj for obj in timer_priority_queue.TimerPriorityQueue.get_instance().user_map.get(user.id, []) if
+             type(obj) == timer.Timer]
         )
 
         if not user_timers:
@@ -85,9 +102,10 @@ class TimedCommands(commands.Cog, name="Timed Commands"):
         """ Sends Timer information for nearest pending Timer instance. """
 
         # Identify users and fetch their timers
-        userid = ctx.author.id
+        user = ctx.author
         user_timers = sorted(
-            [obj for obj in timer_priority_queue.TimerPriorityQueue.get_instance().user_map[userid] if type(obj) == timer.Timer]
+            [obj for obj in timer_priority_queue.TimerPriorityQueue.get_instance().user_map.get(user.id, []) if
+             type(obj) == timer.Timer]
         )
 
         if not user_timers:
@@ -121,30 +139,36 @@ class TimedCommands(commands.Cog, name="Timed Commands"):
 
         await ctx.send(embed=embed)
 
-        # userid = ctx.message.author.id
-        # top_timer = timer_priority_queue.TimerPriorityQueue.get_instance().peek()
-        # await ctx.send(repr(top_timer))
-
     @commands.command(name="unset-timer", aliases=['ut'])
     async def unset_timer(self, ctx, idx: str):
         """ Destroys Timer instance. """
 
         # Identify users and fetch their timers
-        userid = ctx.author.id
+        user = ctx.author
         user_timers = sorted(
-            [obj for obj in timer_priority_queue.TimerPriorityQueue.get_instance().user_map[userid] if type(obj) == timer.Timer]
+            [obj for obj in timer_priority_queue.TimerPriorityQueue.get_instance().user_map.get(user.id, []) if
+             type(obj) == timer.Timer]
         )
-
-        idx = int(idx)
 
         if not user_timers:
             await ctx.send(embed=discord.Embed(
                 description="No timers found!",
                 colour=cfg.colors.ERROR
             ))
-        elif not 1 <= idx <= len(user_timers):
+            return
+
+        try:
+            idx = int(idx)
+        except ValueError:
             await ctx.send(embed=discord.Embed(
-                description=f"Index input not in range! Range [1 .. {len(user_timers)}], got {idx})",
+                description="Non-numeric index given!",
+                colour=cfg.colors.ERROR
+            ))
+            return
+
+        if not 1 <= idx <= len(user_timers):
+            await ctx.send(embed=discord.Embed(
+                description=f"Index input not in range! Range [1 .. {len(user_timers)}], got {idx}",
                 colour=cfg.colors.ERROR
             ))
 
@@ -165,10 +189,31 @@ class TimedCommands(commands.Cog, name="Timed Commands"):
 
         await self.unset_timer(ctx, str(1))
 
-        # userid = ctx.message.author.id
-        # top_timer = timer_priority_queue.TimerPriorityQueue.get_instance().peek()
-        # removed_top_timer = timer_priority_queue.TimerPriorityQueue.get_instance().remove_timer(top_timer.message_id)
-        # await ctx.send(repr(removed_top_timer))
+    @commands.command(name="unset-all-timers", aliases=['uat'])
+    async def unset_all_timers(self, ctx):
+        """ Delete all timers from the priority queue. """
+
+        user = ctx.author
+        user_timers = sorted(
+            [obj for obj in timer_priority_queue.TimerPriorityQueue.get_instance().user_map.get(user.id, []) if
+             type(obj) == timer.Timer]
+        )
+
+        if not user_timers:
+            await ctx.send(embed=discord.Embed(
+                description="No timers found!",
+                colour=cfg.colors.ERROR
+            ))
+        else:
+            # delete from database
+            for target in user_timers:
+                target.delete(target.message_id)
+                timer_priority_queue.TimerPriorityQueue.get_instance().remove_timer(target.message_id)
+
+            await ctx.send(embed=discord.Embed(
+                description="All timers deleted!",
+                colour=cfg.colors.SUCCESS
+            ))
 
     @commands.command(name="timer-queue", aliases=['tq'])
     async def timer_queue(self, ctx):
