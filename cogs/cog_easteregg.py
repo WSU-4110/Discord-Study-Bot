@@ -180,7 +180,8 @@ class EasterEggCommands(commands.Cog, name="Easter Egg Commands"):
                                                              check=(lambda emj, usr:
                                                                     usr == ctx.author
                                                                     and emj.message == msg
-                                                                    and emj.emoji in emojis))
+                                                                    and (emj.emoji in emojis
+                                                                         or emj.emoji == "❌")))
 
                     used_emojis.append(reaction.emoji)
 
