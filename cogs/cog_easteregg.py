@@ -59,7 +59,7 @@ class EasterEggCommands(commands.Cog, name="Easter Egg Commands"):
                     "?u=https%3A%2F%2Fwww.bigw.com.au%2Fmedias%2Fsys" +
                     "_master%2Fimages%2Fimages%2Fhd5%2Fh14%2F13660536602654.jpg&f=1&nofb=1")
             embed.add_field(name=response, value="Statement: " + question, inline=True)
-            await ctx.send(embed=embed)
+            await ctx.send(embed=embed)  # sends output message
         except asyncio.TimeoutError:
             # in case user takes more than 60 seconds to respond, send message
             embed = discord.Embed(title="Timeout Error!!!",
@@ -117,18 +117,18 @@ class EasterEggCommands(commands.Cog, name="Easter Egg Commands"):
                     or (bot_choice == "Paper" and reaction.emoji == emojis[1])\
                     or (bot_choice == "Scissors" and reaction.emoji == emojis[2]):  # tied
                 color = cfg.colors.LINK
-                title = "Tied!"
+                custom_title = "Tied!"
             elif (bot_choice == "Paper" and reaction.emoji == emojis[0])\
                     or (bot_choice == "Scissors" and reaction.emoji == emojis[1])\
                     or (bot_choice == "Rock" and reaction.emoji == emojis[2]):  # bot wins
                 color = cfg.colors.ERROR
-                title = "Oh no! you lost."
+                custom_title = "Oh no! you lost."
             else:  # player wins
                 color = cfg.colors.SUCCESS
-                title = "Yay! you won."
+                custom_title = "Yay! you won."
 
             # output embed
-            embed = discord.Embed(title=title,
+            embed = discord.Embed(title=custom_title,
                                   description=f"Bot: {emoji}\nYou: {reaction.emoji}",
                                   color=color)
             embed.set_author(name=ctx.author.display_name, icon_url=ctx.author.avatar_url)
@@ -146,14 +146,14 @@ class EasterEggCommands(commands.Cog, name="Easter Egg Commands"):
     @commands.command(name="guessing-game", aliases=["guess", "gg"])  # command to create a note
     async def guessing_game(self, ctx):
         emojis = ["1️⃣", "2️⃣", "3️⃣", "4️⃣", "5️⃣", "6️⃣", "7️⃣", "8️⃣", "9️⃣"]
-        used = []
+        used_emojis = []
         end_game_flag = True  # manages game loop
         final_message_flag = True  # makes sure eng game message is
         attempt_limit = 5
         attempts = attempt_limit
-        choice = random.choice(emojis)
-        title = "Guess the number!"
-        description = f"Wait for all emojis to be added before reacting/selecting. {choice}"
+        secret_answer_emoji = random.choice(emojis)
+        custom_title = "Guess the number!"
+        description = f"Wait for all emojis to be added before reacting/selecting."
         color = cfg.colors.WSU_GOLD
 
         # game loop starts
@@ -162,7 +162,7 @@ class EasterEggCommands(commands.Cog, name="Easter Egg Commands"):
                 if not end_game_flag:
                     final_message_flag = False
                 # create embed to ask user to guess
-                embed = discord.Embed(title=title,
+                embed = discord.Embed(title=custom_title,
                                       description=description,
                                       color=color)
                 embed.set_author(name=ctx.author.display_name, icon_url=ctx.author.avatar_url)
@@ -170,7 +170,7 @@ class EasterEggCommands(commands.Cog, name="Easter Egg Commands"):
 
                 if final_message_flag:
                     for emoji in emojis:  # add emoji to the message
-                        if not (emoji in used):
+                        if not (emoji in used_emojis):
                             await msg.add_reaction(emoji)
                     await msg.add_reaction("❌")  # quit button
 
@@ -182,26 +182,26 @@ class EasterEggCommands(commands.Cog, name="Easter Egg Commands"):
                                                                     and emj.message == msg
                                                                     and emj.emoji in emojis))
 
-                    used.append(reaction.emoji)
+                    used_emojis.append(reaction.emoji)
 
                     if reaction.emoji == "❌":  # user quits
-                        title = "You gave up!"
-                        description = f"The answer was {choice}.\nAttempts left: {attempts}."
+                        custom_title = "You gave up!"
+                        description = f"The answer was {secret_answer_emoji}.\nAttempts left: {attempts}."
                         color = cfg.colors.TIMEOUT
                         end_game_flag = False
                     elif attempts == 1:  # user lost
-                        title = "Oh no! you lost."
-                        description = f"The answer was {choice}."
+                        custom_title = "Oh no! you lost."
+                        description = f"The answer was {secret_answer_emoji}."
                         color = cfg.colors.ERROR
                         end_game_flag = False
-                    elif reaction.emoji == choice:  # user wins
-                        title = "Yay! you won."
+                    elif reaction.emoji == secret_answer_emoji:  # user wins
+                        custom_title = "Yay! you won."
                         description = f"you guessed correctly in {attempt_limit - attempts + 1} attempts."
                         color = cfg.colors.SUCCESS
                         end_game_flag = False
                     else:  # user guessed wrong
                         attempts -= 1
-                        title = "You guessed wrong! Try again."
+                        custom_title = "You guessed wrong! Try again."
                         description = f"Attempts left: {attempts}."
                         color = cfg.colors.WSU_GOLD
             except asyncio.TimeoutError:
