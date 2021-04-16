@@ -3,7 +3,7 @@ import datetime as dt
 from models import timer, reminder, note
 from keep_alive import keep_alive
 from discord.ext import commands
-from utils import database_utils, async_tasks, config, timer_priority_queue
+from utils import database_utils, async_tasks, config
 
 bot = commands.Bot(
     command_prefix="!",  # Change to desired prefix
@@ -19,7 +19,7 @@ async def reinit_queue():
             if dt.datetime.now() <= end_time:
                 orig_channel = bot.get_channel(channel_id)
                 orig_message = await orig_channel.fetch_message(message_id)
-                timer_priority_queue.TimerPriorityQueue.get_instance().add_task(
+                config.timer_pqueue.add_task(
                     timer.Timer(user_id, 0, msg, orig_message, start_time=start_time, end_time=end_time))
         except:
             pass
@@ -34,7 +34,7 @@ async def reinit_queue():
                 content = orig_message.content.split(' ')
                 rem = reminder.Reminder(user_id, msg, orig_message, content[1], int(content[2]), int(content[3]),
                                         recurrence)
-                timer_priority_queue.TimerPriorityQueue.get_instance().add_task(rem)
+                config.timer_pqueue.add_task(rem)
         except:
             pass
 
@@ -57,6 +57,9 @@ async def on_ready():  # When the bot is ready
     print(bot.user)  # Prints the bot's username and identifier
     await async_tasks.run_tasks()
 
+@bot.event
+async def on_command_error(ctx, error):
+    await ctx.send(f'Error! {error}')
 
 extensions = [
     'cogs.cog_example',  # Same name as it would be if you were importing it
@@ -67,6 +70,7 @@ extensions = [
     'cogs.cog_profile',
     'cogs.cog_ticket',
     'cogs.cog_todolist',
+    'cogs.cog_easteregg'
 ]
 
 if __name__ == '__main__':  # Ensures this is the file being ran
