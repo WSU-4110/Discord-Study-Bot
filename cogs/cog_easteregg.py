@@ -212,7 +212,8 @@ class EasterEggCommands(commands.Cog, name="Easter Egg Commands"):
                                       color=cfg.colors.TIMEOUT)
                 embed.set_thumbnail(url="https://thumbs.dreamstime.com/b/error-icon-16125237.jpg")
                 await ctx.send(embed=embed)
-                flag = False
+                end_game_flag = False
+                final_message_flag = False
 
 
 def setup(bot):
