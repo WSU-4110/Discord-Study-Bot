@@ -127,7 +127,7 @@ class ReminderCommands(commands.Cog, name="Reminder Commands"):
             msg_str = ' '.join(msg)
             reminder_obj = reminder.Reminder(userid, msg_str, ctx.message, day, hour, minute, -1)
 
-        reminder_obj.insert(['message_id', 'userid', 'channel_id', 'start_time', 'end_time', 'msg', 'recurrence'])
+        reminder_obj.insert(['message_id', 'userid', 'channel_id', 'start_time', 'end_time', 'msg', 'recurrence', 'roles'])
 
         timer_priority_queue.TimerPriorityQueue.get_instance().add_task(reminder_obj)
 
@@ -202,7 +202,7 @@ class ReminderCommands(commands.Cog, name="Reminder Commands"):
             msg_str = ' '.join(msg)
             reminder_obj = reminder.Reminder(userid, msg_str, ctx.message, day, hour, minute, int(repetitions))
 
-        reminder_obj.insert(['message_id', 'userid', 'channel_id', 'start_time', 'end_time', 'msg', 'recurrence'])
+        reminder_obj.insert(['message_id', 'userid', 'channel_id', 'start_time', 'end_time', 'msg', 'recurrence', 'roles'])
 
         timer_priority_queue.TimerPriorityQueue.get_instance().add_task(reminder_obj)
 
