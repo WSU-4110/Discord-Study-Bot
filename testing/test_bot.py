@@ -129,7 +129,7 @@ def test_next_reminder_date(driver: webdriver.Chrome):
     _days_abbr = ['m', 't', 'w', 'th', 'f', 's', 'su']
 
     # get next date and format
-    next_date = datetime.datetime.now() + datetime.timedelta(days=6)
+    next_date = datetime.datetime.now() + datetime.timedelta(days=7)
     formatted_date = next_date.strftime("%a %b %d")
 
     # get current day to set reminder
