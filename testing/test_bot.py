@@ -1,3 +1,4 @@
+import datetime
 import time
 import pytest
 from selenium import webdriver
@@ -10,7 +11,7 @@ load_dotenv()
 DISCORD_EMAIL = os.getenv("TEST_EMAIL")
 DISCORD_PASSWORD = os.getenv("TEST_PASSWORD")
 REQUEST_WAIT_TIME = 5
-COMMAND_WAIT_TIME = 60
+COMMAND_WAIT_TIME = 70
 
 UNIT_TEST_CHANNEL_URL = 'https://discord.com/channels/@me/832128070194036736'  # 'https://discord.com/channels/801966497235730472/828825916573745185'
 # DM_CHANNEL_URL = 'https://discord.com/channels/@me/832084348760752159'  # CHANGE
@@ -60,7 +61,7 @@ def test_unit_test_channel(driver: webdriver.Chrome):
     assert text == 'Welcome to #unit-testing!'
 '''
 
-
+'''
 # Tests command and creation of one-time repeated reminders
 def test_create_reminder(driver: webdriver.Chrome):
     time.sleep(REQUEST_WAIT_TIME)
@@ -78,8 +79,9 @@ def test_create_reminder(driver: webdriver.Chrome):
     print(message_text)
     time.sleep(REQUEST_WAIT_TIME)
     assert message_text == 'Reminder Created!'
+'''
 
-
+'''
 # Tests command and creation of user defined number of repeated reminders
 def test_create_repeating_reminder(driver: webdriver.Chrome):
     time.sleep(REQUEST_WAIT_TIME)
@@ -99,8 +101,9 @@ def test_create_repeating_reminder(driver: webdriver.Chrome):
     print(message_text)
     time.sleep(REQUEST_WAIT_TIME)
     assert message_text == 'Reminder Created!'
+'''
 
-
+'''
 # Tests command and creation of infinite repeated reminders
 def test_create_infinite_reminder(driver: webdriver.Chrome):
     time.sleep(REQUEST_WAIT_TIME)
@@ -118,16 +121,36 @@ def test_create_infinite_reminder(driver: webdriver.Chrome):
     print(message_text)
     time.sleep(REQUEST_WAIT_TIME)
     assert message_text == 'Reminder Created!'
+'''
 
 
 # Tests instantiation of reminder is one week from day of creation
 def test_next_reminder_date(driver: webdriver.Chrome):
+    _days_abbr = ['m', 't', 'w', 'th', 'f', 's', 'su']
+
+    # get next date and format
+    next_date = datetime.datetime.now() + datetime.timedelta(days=6)
+    formatted_date = next_date.strftime("%a %b %d")
+
+    # get current day to set reminder
+    current_date = datetime.datetime.now()
+
+    # set week_day
+    week_day = _days_abbr[current_date.weekday()]
+
+    # set hour
+    hour = datetime.datetime.now().hour
+
     time.sleep(REQUEST_WAIT_TIME)
     driver.find_element_by_xpath(DM_TEXT_INPUT_XPATH).send_keys('b!sr' + Keys.RETURN)
     time.sleep(REQUEST_WAIT_TIME)
-    driver.find_element_by_xpath(DM_TEXT_INPUT_XPATH).send_keys('th' + Keys.RETURN)
+    driver.find_element_by_xpath(DM_TEXT_INPUT_XPATH).send_keys(week_day + Keys.RETURN)
+
     time.sleep(REQUEST_WAIT_TIME)
-    driver.find_element_by_xpath(DM_TEXT_INPUT_XPATH).send_keys('17 55' + Keys.RETURN)
+    minute = datetime.datetime.now().minute + 1
+    str_time = str(hour) + ' ' + str(minute)
+
+    driver.find_element_by_xpath(DM_TEXT_INPUT_XPATH).send_keys(str_time + Keys.RETURN)
     time.sleep(REQUEST_WAIT_TIME)
     driver.find_element_by_xpath(DM_TEXT_INPUT_XPATH).send_keys('Set Reminder Test' + Keys.RETURN)
     time.sleep(REQUEST_WAIT_TIME)
@@ -136,9 +159,10 @@ def test_next_reminder_date(driver: webdriver.Chrome):
     message_text = messages[-1].find_element_by_class_name(EMBED_MESSAGE_CLASS).find_element_by_class_name(
         EMBED_FIELD_VALUE).text
     print(message_text)
-    assert 'Thu Apr 22' in message_text
+    assert formatted_date in message_text
 
 
+'''
 # Tests query execution
 def test_database_utils_exec():
     statement = 'SELECT COUNT(*) FROM NOTES'
@@ -150,3 +174,4 @@ def test_database_utils_exec():
 # Tests sql database connectivity
 def test_database_connection():
     assert database_utils.connection() != None
+'''
