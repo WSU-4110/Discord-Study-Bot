@@ -53,6 +53,8 @@ def test_unit_test_channel(driver: webdriver.Chrome):
 
 
 def test_ping_command(driver: webdriver.Chrome):
+    time.sleep(REQUEST_WAIT_TIME)
+    print(driver.current_url)
     driver.find_element_by_xpath(TEXT_INPUT_XPATH).send_keys('lb!ping' + Keys.RETURN)
     time.sleep(REQUEST_WAIT_TIME)
     messages = driver.find_element_by_xpath(MESSAGE_CONTAINER_XPATH).find_elements_by_class_name(TEXT_MESSAGE_CLASS)
