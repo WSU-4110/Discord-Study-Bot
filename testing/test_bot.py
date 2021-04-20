@@ -8,7 +8,7 @@ from selenium.webdriver.common.keys import Keys
 
 DISCORD_EMAIL = 'go2977@wayne.edu'
 DISCORD_PASSWORD = 'alph@bet@123'
-REQUEST_WAIT_TIME = 5
+REQUEST_WAIT_TIME = 10
 COMMAND_WAIT_TIME = 60
 
 UNIT_TEST_CHANNEL_URL = 'https://discord.com/channels/801966497235730472/828825916573745185'
@@ -27,7 +27,7 @@ EMBED_MESSAGE_BODY_CLASS = 'embedDescription-1Cuq9a'
 @pytest.fixture(scope="session")
 def driver():
     chrome_options = Options()
-    # chrome_options.add_argument("--headless")
+    chrome_options.add_argument("--headless")
     chrome_options.add_argument("--no-sandbox")
     driver = webdriver.Chrome(options=chrome_options)
     # driver = webdriver.Chrome()  # initiate a webdriver instance through Selenium
