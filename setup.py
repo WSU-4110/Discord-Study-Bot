@@ -14,5 +14,7 @@ st.setup(
         'mysql-connector-python',
         'python-dotenv',
         'duckpy',
+        'pytest',
+        'selenium',
     ]
 )
