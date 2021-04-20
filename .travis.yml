@@ -9,9 +9,9 @@ before_install:
   - wget -N https://chromedriver.storage.googleapis.com/90.0.4430.24/chromedriver_linux64.zip -P ~/
   - unzip ~/chromedriver_linux64.zip -d ~/
   - rm ~/chromedriver_linux64.zip
-  - sudo mv -f ~/chromedriver /usr/local/share/
+  - sudo mv -f ~/chromedriver /usr/local/bin/
 install:
-  - pip install ".[test]" . # install package + test dependencies
+  - pip install . # install package dependencies
 script: pytest # run tests
 after_success:
   - codecov # submit coverage
