@@ -2,6 +2,7 @@ import time
 
 import pytest
 from selenium import webdriver
+from selenium.webdriver.chrome.options import Options
 from selenium.webdriver.common.keys import Keys
 
 
@@ -25,7 +26,11 @@ EMBED_MESSAGE_BODY_CLASS = 'embedDescription-1Cuq9a'
 
 @pytest.fixture(scope="session")
 def driver():
-    driver = webdriver.Chrome()  # initiate a webdriver instance through Selenium
+    chrome_options = Options()
+    chrome_options.add_argument("--headless")
+    chrome_options.add_argument("--no-sandbox")
+    driver = webdriver.Chrome(chrome_options=chrome_options)
+    # driver = webdriver.Chrome()  # initiate a webdriver instance through Selenium
     driver.get('https://discord.com/app')  # go to Discord's login page
     # enter email
     driver.find_element_by_xpath('/html/body/div/div[2]/div/div[2]/div/div/form/div/div/div[1]/div[3]/div[1]/div/div[2]/input').send_keys(DISCORD_EMAIL)
