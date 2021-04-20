@@ -27,9 +27,9 @@ EMBED_MESSAGE_BODY_CLASS = 'embedDescription-1Cuq9a'
 @pytest.fixture(scope="session")
 def driver():
     chrome_options = Options()
-    chrome_options.add_argument("--headless")
+    # chrome_options.add_argument("--headless")
     chrome_options.add_argument("--no-sandbox")
-    driver = webdriver.Chrome(chrome_options=chrome_options)
+    driver = webdriver.Chrome(options=chrome_options)
     # driver = webdriver.Chrome()  # initiate a webdriver instance through Selenium
     driver.get('https://discord.com/app')  # go to Discord's login page
     # enter email
