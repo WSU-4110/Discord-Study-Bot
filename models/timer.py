@@ -77,7 +77,6 @@ class Timer(base_db_model.BaseDBModel):
         return self.end_time - dt.datetime.utcnow()
 
     def embed(self):
-
         """ Returns Discord Embed representation for message sent when Timer instance is activated. """
 
         return discord.Embed(
