@@ -6,15 +6,23 @@ import asyncio
 
 
 class TicketCommands(commands.Cog, name='Ticket Commands'):
-    """These are the ticket commands"""
+    """ Commands associated with creating server tickets used for private questions and answers. """
 
     def __init__(self, bot):
         self.bot = bot
 
     @commands.command(name="setup-tickets")
     async def setup_tickets(self, ctx):
+        """
+        Initializes the Ticket category used for tickets in the server.
+
+        setup-tickets
+        """
+
+        # Get server from the context of the command
         guild = ctx.guild
 
+        # Prompt the user for the name of the ticket category to be made, cancel if it times out
         await ctx.send(embed=discord.Embed(
             description="Enter the name for the ticket category for this server.",
             colour=cfg.colors.WSU_GOLD
@@ -29,12 +37,13 @@ class TicketCommands(commands.Cog, name='Ticket Commands'):
             ))
             return
 
+        # Overwrites object to specify permissions the category will use
         overwrites = {
             guild.default_role: discord.PermissionOverwrite(read_messages=False)
         }
 
+        # Creating, logging ticket and storing it in the DB
         category = await ctx.guild.create_category(response.content, overwrites=overwrites)
-
         cfg.server_ticket_ctgs[guild.id] = category.id
 
         await ctx.send(embed=discord.Embed(
@@ -44,17 +53,27 @@ class TicketCommands(commands.Cog, name='Ticket Commands'):
 
     @commands.command(name="create-ticket", aliases=["ctkt"])
     async def create_ticket(self, ctx):
+        """
+        Initializes private ticket creation and setup.
+
+        create-ticket|ctkt
+        """
+
+        # Get user and server from context of the command
         userid = ctx.author.id
         guild = ctx.guild
 
+        # Generate new channel just for the requesting user
         ticket_channel = await guild.create_text_channel(name=ctx.author.display_name,
                                                          category=discord.utils.get(guild.categories,
                                                                                     id=cfg.server_ticket_ctgs[
                                                                                         guild.id]))
-        perms = ticket_channel.overwrites_for(ctx.author)
+
+        # Set the permissions of the channel such that only the requesting user can see it
         await ticket_channel.set_permissions(ctx.author, read_messages=True, send_messages=False, embed_links=True,
                                              attach_files=True)
 
+        # Continue setup in the ticket channel by prompting user for their question, delete everything if timed out
         q_prompt = await ticket_channel.send(ctx.author.mention, embed=discord.Embed(
             description="Type in your question here.",
             colour=cfg.colors.WSU_GOLD
@@ -71,6 +90,7 @@ class TicketCommands(commands.Cog, name='Ticket Commands'):
             ticket_channel.delete()
             return
 
+        # Prompt users for the roles they want to ping in the question statement, delete everything if timed out
         r_prompt = await ticket_channel.send(embed=discord.Embed(
             description="Which roles would you like to ping with this question? Separate each ping with spaces.",
             colour=cfg.colors.WSU_GOLD
@@ -103,7 +123,7 @@ class TicketCommands(commands.Cog, name='Ticket Commands'):
         await r_response.delete()
 
         new_ticket = ticket.Ticket(userid, ticket_channel.id, question, roles)
-        cfg.ticket_channel_dict[ticket_channel.id] = new_ticket
+        cfg.ticket_channels[ticket_channel.id] = new_ticket
 
         await ticket_channel.send(' '.join(roles), embed=discord.Embed(
             title="Ticket Question",
@@ -120,7 +140,7 @@ class TicketCommands(commands.Cog, name='Ticket Commands'):
         userid = ctx.author.id
         channelid = ctx.channel.id
 
-        resolved_ticket = cfg.ticket_channel_dict.get(channelid, None)
+        resolved_ticket = cfg.ticket_channels.get(channelid, None)
 
         if resolved_ticket is None:
             await ctx.send(embed=discord.Embed(
@@ -135,7 +155,7 @@ class TicketCommands(commands.Cog, name='Ticket Commands'):
             colour=cfg.colors.WSU_GREEN
         ))
 
-        del cfg.ticket_channel_dict[channelid]
+        del cfg.ticket_channels[channelid]
         await discord.utils.get(guild.channels, id=channelid).delete()
 
 
