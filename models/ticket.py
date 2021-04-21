@@ -1,38 +1,32 @@
-import datetime as dt
-from datetime import timedelta as td
-import discord
-from models import base_db_model, note
-from utils import time_utils, database_utils
+from models import base_db_model
 from typing import *
 
 
 class Ticket(base_db_model.BaseDBModel):
     def __init__(self, userid: int, channelid: int, question: str, roles: List[str]):
+        """ Initialize attributes of Ticket instance. """
+
         self._userid = userid
         self._channelid = channelid
         self._question = question
         self._roles = roles
-        self._resolved = False
 
     @property
     def userid(self):
+        """ ID of user requesting Ticket creation. """
         return self._userid
 
     @property
     def channelid(self):
+        """ ID of channel associated with the ticket. """
         return self._channelid
 
     @property
     def question(self):
+        """ Message text associated with the ticket. """
         return self._question
 
     @property
     def roles(self):
+        """ User roles desired when creating the ticket. """
         return self._roles.copy()
-
-    @property
-    def resolved(self):
-        return self._resolved
-
-    def resolve(self):
-        self._resolved = True
