@@ -4,6 +4,7 @@ from unittest.mock import Mock, MagicMock
 
 import pytest
 from selenium import webdriver
+from selenium.webdriver.chrome.options import Options
 from selenium.webdriver.common.keys import Keys
 from utils import timer_priority_queue
 from models import timer
@@ -31,7 +32,11 @@ EMBED_MESSAGE_BODY_CLASS = 'embedDescription-1Cuq9a'
 
 @pytest.fixture(scope="session")
 def driver():
-    driver = webdriver.Chrome()  # initiate a webdriver instance through Selenium
+    chrome_options = Options()
+    chrome_options.add_argument("--headless")
+    chrome_options.add_argument("--no-sandbox")
+    driver = webdriver.Chrome(options=chrome_options)
+    # driver = webdriver.Chrome()  # initiate a webdriver instance through Selenium
     driver.get('https://discord.com/app')  # go to Discord's login page
     # enter email
     driver.find_element_by_xpath(
@@ -60,6 +65,7 @@ def test_unit_test_channel(driver: webdriver.Chrome):
 
 def test_ping_command(driver: webdriver.Chrome):
     driver.find_element_by_xpath(TEXT_INPUT_XPATH).send_keys(f'{BOT_PREFIX}!ping' + Keys.RETURN)
+    print(driver.current_url)
     time.sleep(REQUEST_WAIT_TIME)
     messages = driver.find_element_by_xpath(MESSAGE_CONTAINER_XPATH).find_elements_by_class_name(TEXT_MESSAGE_CLASS)
     message_text = messages[-1].find_element_by_class_name(TEXT_MESSAGE_BODY_CLASS).text
