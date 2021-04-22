@@ -4,7 +4,7 @@ import os
 
 from utils import config, timer_priority_queue, todolist_priority_queue, music_queue
 import discord
-from models import reminder
+from cogs import cog_music
 
 
 async def run_tasks(bot):

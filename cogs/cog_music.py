@@ -20,14 +20,60 @@ class MusicCommands(commands.Cog, name="Music Commands"):
         """ Plays sounds with youtube video link """
 
         guild = ctx.guild
+        # file_name = f"song_{guild}.mp3"
+        #
+        # song_there = os.path.isfile(file_name)
+        # vc = ctx.author.voice
+        # if vc is None:
+        #     await EmbedFactory.error(ctx, "Not in a voice channel!")
+        #     return
+        #
+        # # ignores if already in voice channel because the bot can only
+        # # be in 1 voice call per server due to discords bot api limitations
+        # try:
+        #     await vc.channel.connect()
+        # except discord.ClientException:
+        #     pass
+
+        music_queue.MusicQueue.get_instance().add_url(url, guild.id, ctx)
+
+        # voice = discord.utils.get(self.bot.voice_clients, guild=guild)
+
+        # if not voice.is_playing() or not config.server_playing_music[guild.id]:
+        #     try:
+        #         if song_there:
+        #             os.remove(file_name)
+        #     except PermissionError:
+        #         await ctx.send("Wait for the current playing music to end or use the 'stop' command")
+        #         return
+        #
+        #     await EmbedFactory.success(ctx, "Downloading! please wait a moment...")
+        #
+        #     ydl_opts = {
+        #         'format': 'bestaudio/best',
+        #         'postprocessors': [{
+        #             'key': 'FFmpegExtractAudio',
+        #             'preferredcodec': 'mp3',
+        #             'preferredquality': '192',
+        #         }],
+        #     }
+        #     with youtube_dl.YoutubeDL(ydl_opts) as ydl:
+        #         ydl.download([music_queue.MusicQueue.get_instance().get_top(guild.id)])
+        #     for file in os.listdir("./"):
+        #         if file.endswith(".mp3"):
+        #             os.rename(file, file_name)
+        #     await EmbedFactory.success(ctx, "Playing track!")
+        #     voice.play(discord.FFmpegPCMAudio(file_name))
+        #     config.server_playing_music[guild.id] = True
+        # else:
+        #     pass
+
+    async def play_next_song(self, ctx, url):
+        guild = ctx.guild
         file_name = f"song_{guild}.mp3"
 
         song_there = os.path.isfile(file_name)
         vc = ctx.author.voice
-        if vc is None:
-            await EmbedFactory.error(ctx, "Not in a voice channel!")
-            return
-
         # ignores if already in voice channel because the bot can only
         # be in 1 voice call per server due to discords bot api limitations
         try:
@@ -35,37 +81,35 @@ class MusicCommands(commands.Cog, name="Music Commands"):
         except discord.ClientException:
             pass
 
-        music_queue.MusicQueue.get_instance().add_url(url, guild.id, ctx)
-
+        # get voice object
         voice = discord.utils.get(self.bot.voice_clients, guild=guild)
-        if not voice.is_playing() or not config.server_playing_music[guild.id]:
-            try:
-                if song_there:
-                    os.remove(file_name)
-            except PermissionError:
-                await ctx.send("Wait for the current playing music to end or use the 'stop' command")
-                return
 
-            await EmbedFactory.success(ctx, "Downloading! please wait a moment...")
+        try:
+            if song_there:
+                os.remove(file_name)
+        except PermissionError:
+            await EmbedFactory.error(ctx, "Wait for the current playing music to end or use the 'stop' command")
+            return
 
-            ydl_opts = {
-                'format': 'bestaudio/best',
-                'postprocessors': [{
-                    'key': 'FFmpegExtractAudio',
-                    'preferredcodec': 'mp3',
-                    'preferredquality': '192',
-                }],
-            }
-            with youtube_dl.YoutubeDL(ydl_opts) as ydl:
-                ydl.download([music_queue.MusicQueue.get_instance().get_top(guild.id)])
-            for file in os.listdir("./"):
-                if file.endswith(".mp3"):
-                    os.rename(file, file_name)
-            await EmbedFactory.success(ctx, "Playing track!")
-            voice.play(discord.FFmpegPCMAudio(file_name))
-            config.server_playing_music[guild.id] = True
-        else:
-            pass
+        await EmbedFactory.success(ctx, "Downloading! please wait a moment...")
+
+        ydl_opts = {
+            'format': 'bestaudio/best',
+            'postprocessors': [{
+                'key': 'FFmpegExtractAudio',
+                'preferredcodec': 'mp3',
+                'preferredquality': '192',
+            }],
+        }
+        with youtube_dl.YoutubeDL(ydl_opts) as ydl:
+            ydl.download([music_queue.MusicQueue.get_instance().get_top(guild.id)])
+        for file in os.listdir("./"):
+            if file.endswith(".mp3"):
+                os.rename(file, file_name)
+        await EmbedFactory.success(ctx, "Playing track!")
+        voice.play(discord.FFmpegPCMAudio(file_name))
+        config.server_playing_music[guild.id] = True
+
 
     @commands.command()
     async def leave(self, ctx):
