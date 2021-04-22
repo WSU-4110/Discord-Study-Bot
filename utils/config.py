@@ -2,7 +2,6 @@ from collections import defaultdict as dd
 from typing import *
 
 note_dict = dd(list)
-music_dict = dd(list)
 
 ticket_channels: Dict[int, int] = {}
 server_ticket_ctgs: Dict[int, int] = {}
