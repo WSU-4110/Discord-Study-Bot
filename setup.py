@@ -18,6 +18,7 @@ st.setup(
         'pytest',
         'selenium',
         'youtube_dl',
-        'PyNaCl'
+        'PyNaCl',
+        'requests'
     ]
 )
