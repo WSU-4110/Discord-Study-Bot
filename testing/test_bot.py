@@ -406,14 +406,16 @@ def test_hex_to_int():
     assert cfg.hex_to_int('#670d1f') == 0x670d1f
     assert cfg.hex_to_int('#34bfa7') == 0x34bfa7
     assert cfg.hex_to_int('#22f91e') == 0x22f91e
-    # Clear timers
-    send_text_input(driver, f'{BOT_PREFIX}!unset-all-timers')
-    time.sleep(REQUEST_WAIT_TIME)
 
 
 # BRYAN'S TESTS:
 # Tests command and creation of one-time repeated reminders
 def test_create_reminder(driver: webdriver.Chrome):
+    # Clear timers
+    driver.get(UNIT_TEST_CHANNEL_URL)
+    time.sleep(LOAD_WAIT_TIME)
+    send_text_input(driver, f'{BOT_PREFIX}!unset-all-timers')
+    time.sleep(REQUEST_WAIT_TIME)
     driver.get(DM_CHANNEL_URL)
     time.sleep(LOAD_WAIT_TIME)
     driver.find_element_by_xpath(DM_TEXT_INPUT_XPATH).send_keys(f'{BOT_PREFIX}!sr' + Keys.RETURN)
