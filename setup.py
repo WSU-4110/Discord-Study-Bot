@@ -17,5 +17,7 @@ st.setup(
         'duckpy',
         'pytest',
         'selenium',
+        'youtube_dl',
+        'PyNaCl'
     ]
 )

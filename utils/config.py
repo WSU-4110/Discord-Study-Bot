@@ -2,6 +2,7 @@ from collections import defaultdict as dd, namedtuple as nt
 from typing import *
 
 note_dict = dd(list)
+music_dict = dd(list)
 
 ticket_channels = {}
 server_ticket_ctgs = {}
