@@ -56,7 +56,8 @@ def driver():
         chrome_options = Options()
         chrome_options.add_argument("--headless")
         chrome_options.add_argument("--no-sandbox")
-        driver = webdriver.Chrome(options=chrome_options)  # initiate a headless webdriver instance through Selenium with no-sandbox
+        driver = webdriver.Chrome(
+            options=chrome_options)  # initiate a headless webdriver instance through Selenium with no-sandbox
     else:
         driver = webdriver.Chrome()  # initiate a webdriver instance through Selenium
     driver.get('https://discord.com/app')  # go to Discord's login page
@@ -84,8 +85,8 @@ def test_unit_test_channel(driver: webdriver.Chrome):
     assert text == 'Welcome to #unit-testing!'
 '''
 
+
 # ADI'S TESTS:
-"""
 def test_ping_command(driver: webdriver.Chrome):
     driver.find_element_by_xpath(TEXT_INPUT_XPATH).send_keys(f'{BOT_PREFIX}!ping' + Keys.RETURN)
     if IS_TRAVIS:
@@ -100,7 +101,8 @@ def test_create_todo(driver: webdriver.Chrome):
     driver.find_element_by_xpath(TEXT_INPUT_XPATH).send_keys(f'{BOT_PREFIX}!create-item 1 test' + Keys.RETURN)
     time.sleep(REQUEST_WAIT_TIME)
     messages = driver.find_element_by_xpath(MESSAGE_CONTAINER_XPATH).find_elements_by_class_name(TEXT_MESSAGE_CLASS)
-    message_text = messages[-1].find_element_by_class_name(EMBED_MESSAGE_CLASS).find_element_by_class_name(EMBED_MESSAGE_BODY_CLASS).text
+    message_text = messages[-1].find_element_by_class_name(EMBED_MESSAGE_CLASS).find_element_by_class_name(
+        EMBED_MESSAGE_BODY_CLASS).text
     assert message_text == 'ToDoList Item created!'
     driver.get(DM_CHANNEL_URL)
     time.sleep(LOAD_WAIT_TIME)
@@ -125,6 +127,7 @@ def test_timer_pqueue_user_map():
         m = MagicMock()
         m.__getitem__.side_effect = d.__getitem__
         return m
+
     timer_priority_queue.TimerPriorityQueue.get_instance().user_map = mock_dict({DISCORD_USER_ID: ['Test']})
     user_map = timer_priority_queue.TimerPriorityQueue.get_instance().user_map
     assert user_map[DISCORD_USER_ID] is not None
@@ -136,19 +139,22 @@ def test_timer_pqueue_alarm_map():
         m = MagicMock()
         m.__getitem__.side_effect = c.__getitem__
         return m
+
     timer_priority_queue.TimerPriorityQueue.get_instance().alarm_map = mock_counter(Counter({DISCORD_USER_ID: 1}))
     alarm_map = timer_priority_queue.TimerPriorityQueue.get_instance().alarm_map
     assert alarm_map[DISCORD_USER_ID] is not None
 
 
 def test_timer_pqueue_peek():
-    timer_priority_queue.TimerPriorityQueue.get_instance().peek = Mock(return_value=timer.Timer)  # https://realpython.com/python-mock-library/#configuring-your-mock
+    timer_priority_queue.TimerPriorityQueue.get_instance().peek = Mock(
+        return_value=timer.Timer)  # https://realpython.com/python-mock-library/#configuring-your-mock
     assert timer_priority_queue.TimerPriorityQueue.get_instance().peek().__name__ == 'Timer'
 
 
 # NATALY'S TESTS:
 def test_create_note(driver: webdriver.Chrome):
-    driver.find_element_by_xpath(TEXT_INPUT_XPATH).send_keys(f'{BOT_PREFIX}!create-note test1' + Keys.RETURN)  # creating the note using command
+    driver.find_element_by_xpath(TEXT_INPUT_XPATH).send_keys(
+        f'{BOT_PREFIX}!create-note test1' + Keys.RETURN)  # creating the note using command
     time.sleep(REQUEST_WAIT_TIME)
     messages = driver.find_element_by_xpath(MESSAGE_CONTAINER_XPATH).find_elements_by_class_name(TEXT_MESSAGE_CLASS)
     message_text = messages[-1].find_element_by_class_name(EMBED_MESSAGE_CLASS).find_element_by_class_name(
@@ -157,7 +163,8 @@ def test_create_note(driver: webdriver.Chrome):
 
 
 def test_list_notes(driver: webdriver.Chrome):
-    driver.find_element_by_xpath(TEXT_INPUT_XPATH).send_keys(f'{BOT_PREFIX}!list-notes' + Keys.RETURN)  # listing notes command
+    driver.find_element_by_xpath(TEXT_INPUT_XPATH).send_keys(
+        f'{BOT_PREFIX}!list-notes' + Keys.RETURN)  # listing notes command
     time.sleep(REQUEST_WAIT_TIME)
     messages = driver.find_element_by_xpath(MESSAGE_CONTAINER_XPATH).find_elements_by_class_name(TEXT_MESSAGE_CLASS)
     message_text = messages[-1].find_element_by_class_name(EMBED_MESSAGE_CLASS).find_element_by_class_name(
@@ -166,7 +173,8 @@ def test_list_notes(driver: webdriver.Chrome):
 
 
 def test_delete_note(driver: webdriver.Chrome):
-    driver.find_element_by_xpath(TEXT_INPUT_XPATH).send_keys(f'{BOT_PREFIX}!delete-note' + Keys.RETURN)  # creating the note using command
+    driver.find_element_by_xpath(TEXT_INPUT_XPATH).send_keys(
+        f'{BOT_PREFIX}!delete-note' + Keys.RETURN)  # creating the note using command
     time.sleep(REQUEST_WAIT_TIME)
     driver.find_element_by_xpath(TEXT_INPUT_XPATH).send_keys('1' + Keys.RETURN)
     time.sleep(REQUEST_WAIT_TIME)
@@ -191,10 +199,9 @@ def test_utc_to_dest():
     a_time = dt.datetime.now()
     a_time_2 = time_utils.orig_to_utc(a_time)
     assert time_utils.utc_to_dest(a_time_2, 'EST') == a_time  # checking if it matches
-"""
+
 
 # SAFWAAN'S TESTS
-"""
 def send_text_input(driver: webdriver.Chrome, command: str):
     driver.find_element_by_xpath(TEXT_INPUT_XPATH).send_keys(command + Keys.RETURN)
 
@@ -399,9 +406,11 @@ def test_hex_to_int():
     assert cfg.hex_to_int('#670d1f') == 0x670d1f
     assert cfg.hex_to_int('#34bfa7') == 0x34bfa7
     assert cfg.hex_to_int('#22f91e') == 0x22f91e
-"""
+    # Clear timers
+    send_text_input(driver, f'{BOT_PREFIX}!unset-all-timers')
+    time.sleep(REQUEST_WAIT_TIME)
 
-"""
+
 # BRYAN'S TESTS:
 # Tests command and creation of one-time repeated reminders
 def test_create_reminder(driver: webdriver.Chrome):
@@ -421,7 +430,6 @@ def test_create_reminder(driver: webdriver.Chrome):
     print(message_text)
     time.sleep(REQUEST_WAIT_TIME)
     assert message_text == 'Reminder Created!'
-
 
 
 # Tests command and creation of user defined number of repeated reminders
@@ -445,7 +453,6 @@ def test_create_repeating_reminder(driver: webdriver.Chrome):
     assert message_text == 'Reminder Created!'
 
 
-
 # Tests command and creation of infinite repeated reminders
 def test_create_infinite_reminder(driver: webdriver.Chrome):
     time.sleep(REQUEST_WAIT_TIME)
@@ -463,7 +470,6 @@ def test_create_infinite_reminder(driver: webdriver.Chrome):
     print(message_text)
     time.sleep(REQUEST_WAIT_TIME)
     assert message_text == 'Reminder Created!'
-
 
 
 # Tests instantiation of reminder is one week from day of creation
@@ -509,15 +515,19 @@ def test_database_utils_exec():
     result = database_utils.exec(statement)
     print(result, result[0])
     assert result[0][0] > 0
+
+
 # Tests sql database connectivity
 def test_database_connection():
     assert database_utils.connection() != None
-"""
-"""
-#SAIM'S TESTS:
+
+
+# SAIM'S TESTS:
 def test_default_search(driver: webdriver.Chrome):
-    driver.find_element_by_xpath(TEXT_INPUT_XPATH).send_keys(f'{BOT_PREFIX}!search banana' + Keys.RETURN)
+    driver.get(UNIT_TEST_CHANNEL_URL)
     time.sleep(LOAD_WAIT_TIME)
+    driver.find_element_by_xpath(TEXT_INPUT_XPATH).send_keys(f'{BOT_PREFIX}!search banana' + Keys.RETURN)
+    time.sleep(REQUEST_WAIT_TIME)
     messages = driver.find_element_by_xpath(MESSAGE_CONTAINER_XPATH).find_elements_by_class_name(TEXT_MESSAGE_CLASS)
 
     message_text1 = messages[-1].find_element_by_class_name(EMBED_MESSAGE_CLASS).find_element_by_class_name(
@@ -628,10 +638,10 @@ def test_rock_paper_scissors(driver: webdriver.Chrome):
         EMBED_TITLE_CLASS).text
     assert message_text == "Choose rock paper or scissors!"
 
-    time.sleep(LOAD_WAIT_TIME/2)
+    time.sleep(LOAD_WAIT_TIME / 2)
     messages[-1].find_element_by_class_name(REACTION_CLASS).find_element_by_class_name(
         INDIVIDUAL_REACTION_CLASS).click()
-    time.sleep(LOAD_WAIT_TIME/2)
+    time.sleep(LOAD_WAIT_TIME / 2)
 
     messages = driver.find_element_by_xpath(MESSAGE_CONTAINER_XPATH).find_elements_by_class_name(TEXT_MESSAGE_CLASS)
     message_text = messages[-1].find_element_by_class_name(EMBED_MESSAGE_CLASS).find_element_by_class_name(
@@ -668,4 +678,3 @@ def test_guessing_game(driver: webdriver.Chrome):
             messages[-1].find_element_by_class_name(REACTION_CLASS).find_element_by_class_name(
                 INDIVIDUAL_REACTION_CLASS).click()
             time.sleep(LOAD_WAIT_TIME)
-"""

@@ -22,8 +22,11 @@ class Timer(base_db_model.BaseDBModel):
             self._end_time = time_utils.str_to_datetime(self._end_time.strftime("%Y-%m-%d %H:%M"))
         self._msg = msg  # remaining message text
         self._discord_message = discord_message  # message object
-        self._message_id = self._discord_message.id
-        self._channel_id = self._discord_message.channel.id
+        if self._discord_message is not None:
+            self._message_id = self._discord_message.id
+            self._channel_id = self._discord_message.channel.id
+        else:
+            self._channel_id = self._message_id = 0
 
     def __repr__(self):
         """ Get string representation of Timer instance information. """
