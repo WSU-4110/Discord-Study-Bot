@@ -70,6 +70,7 @@ class EasterEggCommands(commands.Cog, name="Easter Egg Commands"):
 
     @commands.command(name="rock-paper-scissors", aliases=["rps"])  # command to create a note
     async def rps(self, ctx):
+        """ Play rock paper scissors against bot """
         try:
             # asks user selection
             emojis = ["🪨", "📜", "✂️"]
@@ -145,6 +146,7 @@ class EasterEggCommands(commands.Cog, name="Easter Egg Commands"):
 
     @commands.command(name="guessing-game", aliases=["guess", "gg"])  # command to create a note
     async def guessing_game(self, ctx):
+        """ A game where you try to guess the number the bot chose """
         emojis = ["1️⃣", "2️⃣", "3️⃣", "4️⃣", "5️⃣", "6️⃣", "7️⃣", "8️⃣", "9️⃣"]
         used_emojis = []
         end_game_flag = True  # manages game loop
