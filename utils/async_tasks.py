@@ -5,7 +5,7 @@ import discord
 from models import reminder
 
 
-async def run_tasks():
+async def run_tasks(bot):
     while True:
         if len(timer_priority_queue.TimerPriorityQueue.get_instance()) == 0:
             pass
@@ -16,7 +16,7 @@ async def run_tasks():
             pass
         else:
             await handle_todolists()
-
+        await check_music_status(bot)
         await asyncio.sleep(3)  # sleep for 3 seconds and check again
 
 
@@ -61,3 +61,12 @@ async def handle_todolists():
                 item.delete(item.message_id)
             '''
             await item.discord_message.author.send(item.formatted_discord_message() + ' of ' + repr(item))  # send the discord message for each item
+
+
+async def check_music_status(bot):
+    for guild_id, status in config.server_playing_music.items():
+        if status:
+            guild = bot.get_guild(guild_id)
+            voice = discord.utils.get(bot.voice_clients, guild=guild)
+            if not voice.is_playing():
+                config.server_playing_music[guild_id] = False

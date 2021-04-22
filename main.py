@@ -75,7 +75,7 @@ async def on_ready():  # When the bot is ready
     print("starting async tasks")
     print("I'm in and Ready!")
     print(bot.user)  # Prints the bot's username and identifier
-    await async_tasks.run_tasks()
+    await async_tasks.run_tasks(bot)
 
 
 extensions = [

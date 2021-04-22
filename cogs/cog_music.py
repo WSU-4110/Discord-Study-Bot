@@ -3,6 +3,9 @@ from discord.ext import commands
 import youtube_dl
 import os
 from factories.embedfactory import EmbedFactory
+from utils import music_queue, config
+
+
 # from utils.config import music_dict, colors
 
 
@@ -15,14 +18,11 @@ class MusicCommands(commands.Cog, name="Music Commands"):
     @commands.command()
     async def play(self, ctx, url: str):
         """ Plays sounds with youtube video link """
-        song_there = os.path.isfile("song.mp3")
-        try:
-            if song_there:
-                os.remove("song.mp3")
-        except PermissionError:
-            await ctx.send("Wait for the current playing music to end or use the 'stop' command")
-            return
 
+        guild = ctx.guild
+        file_name = f"song_{guild}.mp3"
+
+        song_there = os.path.isfile(file_name)
         vc = ctx.author.voice
         if vc is None:
             await EmbedFactory.error(ctx, "Not in a voice channel!")
@@ -35,34 +35,47 @@ class MusicCommands(commands.Cog, name="Music Commands"):
         except discord.ClientException:
             pass
 
-        voice = discord.utils.get(self.bot.voice_clients, guild=ctx.guild)
+        music_queue.MusicQueue.get_instance().add_url(url, guild.id)
 
-        EmbedFactory.success(ctx, "Downloading! please wait a moment...")
+        voice = discord.utils.get(self.bot.voice_clients, guild=guild)
+        if not voice.is_playing() or not config.server_playing_music[guild.id]:
+            try:
+                if song_there:
+                    os.remove(file_name)
+            except PermissionError:
+                await ctx.send("Wait for the current playing music to end or use the 'stop' command")
+                return
 
-        ydl_opts = {
-            'format': 'bestaudio/best',
-            'postprocessors': [{
-                'key': 'FFmpegExtractAudio',
-                'preferredcodec': 'mp3',
-                'preferredquality': '192',
-            }],
-        }
-        with youtube_dl.YoutubeDL(ydl_opts) as ydl:
-            ydl.download([url])
-        for file in os.listdir("./"):
-            if file.endswith(".mp3"):
-                os.rename(file, "song.mp3")
-        EmbedFactory.success(ctx, "Playing Song!")
-        voice.play(discord.FFmpegPCMAudio("song.mp3"))
+            await EmbedFactory.success(ctx, "Downloading! please wait a moment...")
+
+            ydl_opts = {
+                'format': 'bestaudio/best',
+                'postprocessors': [{
+                    'key': 'FFmpegExtractAudio',
+                    'preferredcodec': 'mp3',
+                    'preferredquality': '192',
+                }],
+            }
+            with youtube_dl.YoutubeDL(ydl_opts) as ydl:
+                ydl.download([music_queue.MusicQueue.get_instance().get_top(guild.id)])
+            for file in os.listdir("./"):
+                if file.endswith(".mp3"):
+                    os.rename(file, file_name)
+            await EmbedFactory.success(ctx, "Playing track!")
+            voice.play(discord.FFmpegPCMAudio(file_name))
+            config.server_playing_music[guild.id] = True
+        else:
+            pass
 
     @commands.command()
     async def leave(self, ctx):
         """ Bot disconnects from voice channel """
         voice = discord.utils.get(self.bot.voice_clients, guild=ctx.guild)
         if voice.is_connected():
+            music_queue.MusicQueue.get_instance().clear_for(ctx.guild.id)
             await voice.disconnect()
         else:
-            EmbedFactory.error(ctx, "The bot is not connected to a voice channel.")
+            await EmbedFactory.error(ctx, "The bot is not connected to a voice channel.")
 
     @commands.command()
     async def pause(self, ctx):
@@ -70,26 +83,26 @@ class MusicCommands(commands.Cog, name="Music Commands"):
         voice = discord.utils.get(self.bot.voice_clients, guild=ctx.guild)
         if voice.is_playing():
             voice.pause()
-            EmbedFactory.success(ctx, "Paused!")
+            await EmbedFactory.success(ctx, "Paused track!")
         else:
-            EmbedFactory.error(ctx, "Currently no audio is playing.")
+            await EmbedFactory.error(ctx, "Currently no audio is playing.")
 
     @commands.command()
     async def resume(self, ctx):
         """ resumes music in voice channel """
         voice = discord.utils.get(self.bot.voice_clients, guild=ctx.guild)
         if voice.is_paused():
-            EmbedFactory.success(ctx, "Resumed!")
+            await EmbedFactory.success(ctx, "Resumed track!")
             voice.resume()
         else:
-            EmbedFactory.error(ctx, "The audio is not paused.")
+            await EmbedFactory.error(ctx, "The audio is not paused.")
 
     @commands.command()
     async def stop(self, ctx):
         """ stops playing music (allows for song change) """
         voice = discord.utils.get(self.bot.voice_clients, guild=ctx.guild)
         voice.stop()
-        EmbedFactory.success(ctx, "Stopped!")
+        await EmbedFactory.success(ctx, "Stopped track!")
 
 
 def setup(bot):
