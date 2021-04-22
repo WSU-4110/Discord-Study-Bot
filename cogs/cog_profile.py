@@ -1,8 +1,10 @@
 import discord
 from discord.ext import commands
-from utils import config as cfg
 import asyncio
-from utils import time_utils
+import os
+from dotenv import load_dotenv
+from utils import time_utils, database_utils as dbutils, config as cfg
+from factories.embedfactory import EmbedFactory
 
 
 class ProfileCommands(commands.Cog, name='Profile Commands'):
@@ -10,6 +12,7 @@ class ProfileCommands(commands.Cog, name='Profile Commands'):
 
     def __init__(self, bot):
         self.bot = bot
+        load_dotenv()
 
     @commands.command(name="init")
     async def init_user(self, ctx):
@@ -29,37 +32,40 @@ class ProfileCommands(commands.Cog, name='Profile Commands'):
             icon_url=ctx.author.avatar_url
         ).set_footer(text=self.bot.user.display_name, icon_url=self.bot.user.avatar_url))
 
-        await ctx.send(embed=discord.Embed(
-            description="Please enter your time zone information as a 3-letter code (eg. EST, PST).\n",
-            colour=cfg.colors.WSU_GOLD
-        ))
-
         while True:
-            try:
-                response = await self.bot.wait_for('message', check=check, timeout=60)
-                if await self.change_timezone(ctx, response.content):
-                    break
-            except asyncio.TimeoutError as e:
-                await ctx.send(embed=discord.Embed(
-                    description="Took too long to respond!",
-                    colour=cfg.colors.TIMEOUT
-                ))
+            tz = await EmbedFactory.prompt(ctx, self.bot,
+                                           "Please enter your time zone information as a 3-letter code (eg. EST, PST)",
+                                           check=check)
+            if tz is None:
+                return
+
+            if await self.change_timezone(ctx, tz):
                 break
 
     @commands.command(name="change-timezone", aliases=['change-tz', 'ctz'])
-    async def change_timezone(self, ctx, tz: str):
+    async def change_timezone(self, ctx, tz: str) -> bool:
         """
         Changes the user's saved timezone.
         """
 
+        user = ctx.author
+
         if tz in time_utils.tz_map:
-            await ctx.send("nice")
+            con = dbutils.connection()
+            cursor = con.cursor(buffered=True)
+            if user.id in cfg.user_tzs:
+                cursor.execute(
+                    "UPDATE USER_INFO SET tz = %s WHERE USER_ID = %s",
+                    (tz, user.id))
+            else:
+                cursor.execute("INSERT INTO USER_INFO (user_id, tz) values (%s, %s)", (user.id, tz))
+            con.commit()
+            cursor.close()
+            cfg.user_tzs[user.id] = tz
+            await EmbedFactory.success(ctx, "Time zone information saved!")
             return True
         else:
-            await ctx.send(embed=discord.Embed(
-                description="Time zone not recognized!",
-                colour=cfg.colors.ERROR
-            ))
+            await EmbedFactory.error(ctx, "Time zone not recognized!")
             return False
 
     @commands.command(name="display_score", aliases=['ds'])
@@ -73,6 +79,41 @@ class ProfileCommands(commands.Cog, name='Profile Commands'):
         """
         Displays the user's general information.
         """
+        user = ctx.author
+
+        await ctx.send(embed=discord.Embed(
+            title="User Info",
+            colour=cfg.colors.WSU_GREEN
+        ).set_author(
+            name=ctx.author.display_name,
+            icon_url=ctx.author.avatar_url
+        ).add_field(
+            name="Time Zone",
+            value=cfg.user_tzs[user.id]
+        ))
+
+    @commands.command(name="send-feedback")
+    async def send_feedback(self, ctx, *, msg):
+        """
+        Allows the user to send feedback to the developers of StudyBot.
+        """
+
+        channel_id = int(os.getenv("FEEDBACK_CHANNEL_ID"))
+        server_id = int(os.getenv("FEEDBACK_SERVER_ID"))
+
+        dev_guild = self.bot.get_guild(server_id)
+        channel = discord.utils.get(dev_guild.text_channels, id=channel_id)
+
+        await channel.send(embed=discord.Embed(
+            title="New Feedback!",
+            description=msg,
+            colour=cfg.colors.WSU_GREEN
+        ).set_author(
+            name=ctx.author.display_name,
+            icon_url=ctx.author.avatar_url
+        ))
+
+        await EmbedFactory.success(ctx, "Your feedback has been sent!")
 
 
 def setup(bot):

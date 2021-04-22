@@ -83,7 +83,7 @@ class TimedCommands(commands.Cog, name="Timed Commands"):
                 inline=True
             ).add_field(
                 name=f"Expires At",
-                value=time_utils.utc_to_dest(t.end_time).strftime("%c"),  # expiration date
+                value=time_utils.utc_to_dest(t.end_time, cfg.user_tzs[user.id]).strftime("%c"),  # expiration date
                 inline=True
             ).add_field(  # empty inline field to allow wrapping of each timer field group
                 name='\u200b',
@@ -125,11 +125,11 @@ class TimedCommands(commands.Cog, name="Timed Commands"):
             inline=False
         ).add_field(  # creation date
             name="Created at",
-            value=time_utils.utc_to_dest(t.start_time).strftime("%c"),
+            value=time_utils.utc_to_dest(t.start_time, cfg.user_tzs[user.id]).strftime("%c"),
             inline=True
         ).add_field(  # expiration date
             name="Expires at",
-            value=time_utils.utc_to_dest(t.end_time).strftime("%c"),
+            value=time_utils.utc_to_dest(t.end_time, cfg.user_tzs[user.id]).strftime("%c"),
             inline=True
         ).set_footer(text=self.bot.user.display_name, icon_url=self.bot.user.avatar_url)
 

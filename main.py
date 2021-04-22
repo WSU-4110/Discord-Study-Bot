@@ -2,10 +2,10 @@ import os
 import datetime as dt
 import discord
 from models import timer, reminder, note, ticket
+from factories.embedfactory import EmbedFactory
 from keep_alive import keep_alive
 from discord.ext import commands
 from utils import database_utils, async_tasks, config, timer_priority_queue
-
 # from dotenv import load_dotenv
 
 bot = commands.Bot(
@@ -55,15 +55,17 @@ async def reinit_queue():
     for message_id, user_id, channel_id, question, roles in tickets:
         try:
             ticket_obj = ticket.Ticket(message_id, user_id, channel_id, question, roles)
-            print(user_id)
             config.ticket_channels[channel_id] = ticket_obj
         except Exception as e:
             pass
 
     ticket_categories = database_utils.exec("SELECT * FROM SERVER_TICKET_CATEGORIES")
     for server_id, ctg_id in ticket_categories:
-        print(server_id, ctg_id)
         config.server_ticket_ctgs[server_id] = ctg_id
+
+    user_tz_info = database_utils.exec("SELECT * FROM USER_INFO")
+    for user_id, tz, score in user_tz_info:
+        config.user_tzs[user_id] = tz
 
 
 @bot.event
@@ -91,7 +93,7 @@ extensions = [
 
 @bot.event
 async def on_command_error(ctx, error):
-    await ctx.send(f'Error! {error}')
+    await EmbedFactory.error(ctx, f'Error! `{error}`')
 
 
 if __name__ == '__main__':  # Ensures this is the file being ran

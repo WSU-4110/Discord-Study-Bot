@@ -6,6 +6,8 @@ note_dict = dd(list)
 ticket_channels = {}
 server_ticket_ctgs = {}
 
+user_tzs = {}
+
 author_ids = [189533543993442304,
               154752622262353921,
               667203504196026422,
