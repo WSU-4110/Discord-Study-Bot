@@ -6,14 +6,14 @@ from models import todolist
 
 
 class ToDoListCommands(commands.Cog, name="ToDoList Commands"):
-    """These are the notes commands"""
+    """These are the ToDoList commands"""
 
     def __init__(self, bot):
         self.bot = bot
 
     @commands.command(name="create-item", aliases=["todo"])  # command to create a note
     async def create_item(self, ctx, time: str, *msg: str):
-        """ Creates a todo item."""
+        """ Creates a ToDoList item."""
         userid = ctx.author.id
 
         # Timer creation
@@ -32,7 +32,7 @@ class ToDoListCommands(commands.Cog, name="ToDoList Commands"):
 
     @commands.command(name="todolist-queue", aliases=['td'])
     async def timer_queue(self, ctx):
-        """ Sends information for all pending Timer instances. """
+        """ Sends information for all pending ToDoList instances. """
 
         userid = ctx.author.id
 

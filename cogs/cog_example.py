@@ -73,6 +73,9 @@ class DevCommands(commands.Cog, name='Developer Commands'):
 
 	@commands.command(name="ping")
 	async def ping(self, ctx):
+		"""
+		A ping-pong based status check to see if the bot is online
+		"""
 		await ctx.send("pong!")
 
 

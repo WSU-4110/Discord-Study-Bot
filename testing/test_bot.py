@@ -516,7 +516,7 @@ def test_database_utils_exec():
     statement = 'SELECT COUNT(*) FROM NOTES'
     result = database_utils.exec(statement)
     print(result, result[0])
-    assert result[0][0] > 0
+    assert result[0][0] >= 0
 
 
 # Tests sql database connectivity
@@ -529,7 +529,7 @@ def test_default_search(driver: webdriver.Chrome):
     driver.get(UNIT_TEST_CHANNEL_URL)
     time.sleep(LOAD_WAIT_TIME)
     driver.find_element_by_xpath(TEXT_INPUT_XPATH).send_keys(f'{BOT_PREFIX}!search banana' + Keys.RETURN)
-    time.sleep(REQUEST_WAIT_TIME)
+    time.sleep(LOAD_WAIT_TIME)
     messages = driver.find_element_by_xpath(MESSAGE_CONTAINER_XPATH).find_elements_by_class_name(TEXT_MESSAGE_CLASS)
 
     message_text1 = messages[-1].find_element_by_class_name(EMBED_MESSAGE_CLASS).find_element_by_class_name(
