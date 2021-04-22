@@ -18,6 +18,7 @@ async def run_tasks(bot):
             pass
         else:
             await handle_todolists()
+        print(config.server_playing_music)
         await check_music_status(bot)
         await asyncio.sleep(3)  # sleep for 3 seconds and check again
 
@@ -66,11 +67,14 @@ async def handle_todolists():
 
 
 async def check_music_status(bot):
-    for guild_id, status in config.server_playing_music.items():
-        if status:
-            guild = bot.get_guild(guild_id)
+    for guild_id in config.server_playing_music.keys():
+        print(guild_id)
+        guild = bot.get_guild(guild_id)
+        try:
             voice = discord.utils.get(bot.voice_clients, guild=guild)
             if not voice.is_playing() and len(music_queue.MusicQueue.get_instance().items[guild_id]) > 0:
                 config.server_playing_music[guild_id] = False
                 song_tuple = music_queue.MusicQueue.get_instance().get_top(guild_id)
                 await bot.get_cog("Music Commands").play_next_song(song_tuple[1], song_tuple[0])
+        except:
+            pass
