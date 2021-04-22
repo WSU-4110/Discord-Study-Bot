@@ -37,6 +37,8 @@ class MusicCommands(commands.Cog, name="Music Commands"):
 
         voice = discord.utils.get(self.bot.voice_clients, guild=ctx.guild)
 
+        EmbedFactory.success(ctx, "Downloading! please wait a moment...")
+
         ydl_opts = {
             'format': 'bestaudio/best',
             'postprocessors': [{
@@ -50,6 +52,7 @@ class MusicCommands(commands.Cog, name="Music Commands"):
         for file in os.listdir("./"):
             if file.endswith(".mp3"):
                 os.rename(file, "song.mp3")
+        EmbedFactory.success(ctx, "Playing Song!")
         voice.play(discord.FFmpegPCMAudio("song.mp3"))
 
     @commands.command()
@@ -59,7 +62,7 @@ class MusicCommands(commands.Cog, name="Music Commands"):
         if voice.is_connected():
             await voice.disconnect()
         else:
-            await ctx.send("The bot is not connected to a voice channel.")
+            EmbedFactory.error(ctx, "The bot is not connected to a voice channel.")
 
     @commands.command()
     async def pause(self, ctx):
@@ -67,23 +70,26 @@ class MusicCommands(commands.Cog, name="Music Commands"):
         voice = discord.utils.get(self.bot.voice_clients, guild=ctx.guild)
         if voice.is_playing():
             voice.pause()
+            EmbedFactory.success(ctx, "Paused!")
         else:
-            await ctx.send("Currently no audio is playing.")
+            EmbedFactory.error(ctx, "Currently no audio is playing.")
 
     @commands.command()
     async def resume(self, ctx):
         """ resumes music in voice channel """
         voice = discord.utils.get(self.bot.voice_clients, guild=ctx.guild)
         if voice.is_paused():
+            EmbedFactory.success(ctx, "Resumed!")
             voice.resume()
         else:
-            await ctx.send("The audio is not paused.")
+            EmbedFactory.error(ctx, "The audio is not paused.")
 
     @commands.command()
     async def stop(self, ctx):
         """ stops playing music (allows for song change) """
         voice = discord.utils.get(self.bot.voice_clients, guild=ctx.guild)
         voice.stop()
+        EmbedFactory.success(ctx, "Stopped!")
 
 
 def setup(bot):
