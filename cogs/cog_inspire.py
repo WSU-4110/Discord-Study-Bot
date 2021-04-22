@@ -6,6 +6,7 @@ from models import inspire
 """This cog uses the Inspire class to get appropriate quote and send to user"""
 
 class InspireCommands(commands.Cog, name="Inspire Commands"):
+    """These commands get inspiring quotes"""
 
     def __init__(self, bot):
         self.bot = bot
@@ -13,6 +14,8 @@ class InspireCommands(commands.Cog, name="Inspire Commands"):
     # This command returns satirical quotes related to computer programming
     @commands.command(name="get-cs-satire", aliases=["css"])
     async def display_quote(self, ctx, discord_role: str = ''):
+        """Gets a CS satirical quote"""
+
         # sanitize input and check if parameter is empty string or contains role
         check_param: bool
         if '<@&' in discord_role and '>' in discord_role:
@@ -54,6 +57,8 @@ class InspireCommands(commands.Cog, name="Inspire Commands"):
     # This command gets inspirational quotes regardless of industry
     @commands.command(name="get-some-inspiration", aliases=["gsm"])
     async def display_inspirational_quote(self, ctx, discord_role: str = ''):
+        """Gets a purely inspiring quote"""
+
         # sanitize input and check if parameter is empty string or contains role
         check_param: bool
         if '<@&' in discord_role and '>' in discord_role:
@@ -92,6 +97,8 @@ class InspireCommands(commands.Cog, name="Inspire Commands"):
     # This command gets motivational quotes related to computer programming
     @commands.command(name="get-cs-motivation", aliases=["csm"])
     async def display_motivational_quote(self, ctx, discord_role: str = ''):
+        """Gets a CS motivation quote"""
+
         # sanitize input and check if parameter is empty string or contains role
         check_param: bool
         if '<@&' in discord_role and '>' in discord_role:
