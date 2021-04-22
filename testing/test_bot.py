@@ -34,18 +34,20 @@ DM_CHANNEL_URL = 'https://discord.com/channels/@me/831667630145536030'
 
 TEXT_INPUT_XPATH = '/html/body/div/div[2]/div/div[2]/div/div/div/div[2]/div[2]/div[2]/main/form/div/div/div/div/div/div[3]/div[2]'
 MESSAGE_CONTAINER_XPATH = '/html/body/div/div[2]/div/div[2]/div/div/div/div[2]/div[2]/div[2]/main/div[1]/div/div/div'
-
 DM_TEXT_INPUT_XPATH = '/html/body/div/div[2]/div/div[2]/div/div/div/div[2]/div[2]/div[2]/main/form/div/div/div/div[3]/div[2]/div'  # '/html/body/div/div[2]/div/div[2]/div/div/div/div[2]/div[2]/div[2]/main/form/div/div/div/div[3]/div[2]/div'
 
 TEXT_MESSAGE_CLASS = 'message-2qnXI6'
 TEXT_MESSAGE_BODY_CLASS = 'markup-2BOw-j'
-
 EMBED_MESSAGE_CLASS = 'grid-1nZz7S'
 EMBED_MESSAGE_BODY_CLASS = 'embedDescription-1Cuq9a'
 EMBED_MESSAGE_TITLE_CLASS = 'embedTitle-3OXDkz'
 EMBED_TITLE_CLASS = EMBED_MESSAGE_TITLE_CLASS
 EMBED_MESSAGE_FIELD_CLASS = "embedFieldValue-nELq2s"
+EMBED_LINKED_TITLE_CLASS = 'anchor-3Z-8Bb'
 EMBED_FIELD_VALUE = EMBED_MESSAGE_FIELD_CLASS
+EMBED_FIELD_NAME_CLASS = "embedFieldName-NFrena"
+REACTION_CLASS = "reactions-12N0jA"
+INDIVIDUAL_REACTION_CLASS = "reaction-1hd86g"
 
 
 @pytest.fixture(scope="session")
@@ -54,7 +56,8 @@ def driver():
         chrome_options = Options()
         chrome_options.add_argument("--headless")
         chrome_options.add_argument("--no-sandbox")
-        driver = webdriver.Chrome(options=chrome_options)  # initiate a headless webdriver instance through Selenium with no-sandbox
+        driver = webdriver.Chrome(
+            options=chrome_options)  # initiate a headless webdriver instance through Selenium with no-sandbox
     else:
         driver = webdriver.Chrome()  # initiate a webdriver instance through Selenium
     driver.get('https://discord.com/app')  # go to Discord's login page
@@ -82,8 +85,8 @@ def test_unit_test_channel(driver: webdriver.Chrome):
     assert text == 'Welcome to #unit-testing!'
 '''
 
+
 # ADI'S TESTS:
-"""
 def test_ping_command(driver: webdriver.Chrome):
     driver.find_element_by_xpath(TEXT_INPUT_XPATH).send_keys(f'{BOT_PREFIX}!ping' + Keys.RETURN)
     if IS_TRAVIS:
@@ -98,7 +101,8 @@ def test_create_todo(driver: webdriver.Chrome):
     driver.find_element_by_xpath(TEXT_INPUT_XPATH).send_keys(f'{BOT_PREFIX}!create-item 1 test' + Keys.RETURN)
     time.sleep(REQUEST_WAIT_TIME)
     messages = driver.find_element_by_xpath(MESSAGE_CONTAINER_XPATH).find_elements_by_class_name(TEXT_MESSAGE_CLASS)
-    message_text = messages[-1].find_element_by_class_name(EMBED_MESSAGE_CLASS).find_element_by_class_name(EMBED_MESSAGE_BODY_CLASS).text
+    message_text = messages[-1].find_element_by_class_name(EMBED_MESSAGE_CLASS).find_element_by_class_name(
+        EMBED_MESSAGE_BODY_CLASS).text
     assert message_text == 'ToDoList Item created!'
     driver.get(DM_CHANNEL_URL)
     time.sleep(LOAD_WAIT_TIME)
@@ -123,6 +127,7 @@ def test_timer_pqueue_user_map():
         m = MagicMock()
         m.__getitem__.side_effect = d.__getitem__
         return m
+
     timer_priority_queue.TimerPriorityQueue.get_instance().user_map = mock_dict({DISCORD_USER_ID: ['Test']})
     user_map = timer_priority_queue.TimerPriorityQueue.get_instance().user_map
     assert user_map[DISCORD_USER_ID] is not None
@@ -134,19 +139,22 @@ def test_timer_pqueue_alarm_map():
         m = MagicMock()
         m.__getitem__.side_effect = c.__getitem__
         return m
+
     timer_priority_queue.TimerPriorityQueue.get_instance().alarm_map = mock_counter(Counter({DISCORD_USER_ID: 1}))
     alarm_map = timer_priority_queue.TimerPriorityQueue.get_instance().alarm_map
     assert alarm_map[DISCORD_USER_ID] is not None
 
 
 def test_timer_pqueue_peek():
-    timer_priority_queue.TimerPriorityQueue.get_instance().peek = Mock(return_value=timer.Timer)  # https://realpython.com/python-mock-library/#configuring-your-mock
+    timer_priority_queue.TimerPriorityQueue.get_instance().peek = Mock(
+        return_value=timer.Timer)  # https://realpython.com/python-mock-library/#configuring-your-mock
     assert timer_priority_queue.TimerPriorityQueue.get_instance().peek().__name__ == 'Timer'
 
 
 # NATALY'S TESTS:
 def test_create_note(driver: webdriver.Chrome):
-    driver.find_element_by_xpath(TEXT_INPUT_XPATH).send_keys(f'{BOT_PREFIX}!create-note test1' + Keys.RETURN)  # creating the note using command
+    driver.find_element_by_xpath(TEXT_INPUT_XPATH).send_keys(
+        f'{BOT_PREFIX}!create-note test1' + Keys.RETURN)  # creating the note using command
     time.sleep(REQUEST_WAIT_TIME)
     messages = driver.find_element_by_xpath(MESSAGE_CONTAINER_XPATH).find_elements_by_class_name(TEXT_MESSAGE_CLASS)
     message_text = messages[-1].find_element_by_class_name(EMBED_MESSAGE_CLASS).find_element_by_class_name(
@@ -155,7 +163,8 @@ def test_create_note(driver: webdriver.Chrome):
 
 
 def test_list_notes(driver: webdriver.Chrome):
-    driver.find_element_by_xpath(TEXT_INPUT_XPATH).send_keys(f'{BOT_PREFIX}!list-notes' + Keys.RETURN)  # listing notes command
+    driver.find_element_by_xpath(TEXT_INPUT_XPATH).send_keys(
+        f'{BOT_PREFIX}!list-notes' + Keys.RETURN)  # listing notes command
     time.sleep(REQUEST_WAIT_TIME)
     messages = driver.find_element_by_xpath(MESSAGE_CONTAINER_XPATH).find_elements_by_class_name(TEXT_MESSAGE_CLASS)
     message_text = messages[-1].find_element_by_class_name(EMBED_MESSAGE_CLASS).find_element_by_class_name(
@@ -164,7 +173,8 @@ def test_list_notes(driver: webdriver.Chrome):
 
 
 def test_delete_note(driver: webdriver.Chrome):
-    driver.find_element_by_xpath(TEXT_INPUT_XPATH).send_keys(f'{BOT_PREFIX}!delete-note' + Keys.RETURN)  # creating the note using command
+    driver.find_element_by_xpath(TEXT_INPUT_XPATH).send_keys(
+        f'{BOT_PREFIX}!delete-note' + Keys.RETURN)  # creating the note using command
     time.sleep(REQUEST_WAIT_TIME)
     driver.find_element_by_xpath(TEXT_INPUT_XPATH).send_keys('1' + Keys.RETURN)
     time.sleep(REQUEST_WAIT_TIME)
@@ -189,10 +199,9 @@ def test_utc_to_dest():
     a_time = dt.datetime.now()
     a_time_2 = time_utils.orig_to_utc(a_time)
     assert time_utils.utc_to_dest(a_time_2, 'EST') == a_time  # checking if it matches
-"""
+
 
 # SAFWAAN'S TESTS
-"""
 def send_text_input(driver: webdriver.Chrome, command: str):
     driver.find_element_by_xpath(TEXT_INPUT_XPATH).send_keys(command + Keys.RETURN)
 
@@ -397,12 +406,16 @@ def test_hex_to_int():
     assert cfg.hex_to_int('#670d1f') == 0x670d1f
     assert cfg.hex_to_int('#34bfa7') == 0x34bfa7
     assert cfg.hex_to_int('#22f91e') == 0x22f91e
-"""
 
-"""
+
 # BRYAN'S TESTS:
 # Tests command and creation of one-time repeated reminders
 def test_create_reminder(driver: webdriver.Chrome):
+    # Clear timers
+    driver.get(UNIT_TEST_CHANNEL_URL)
+    time.sleep(LOAD_WAIT_TIME)
+    send_text_input(driver, f'{BOT_PREFIX}!unset-all-timers')
+    time.sleep(REQUEST_WAIT_TIME)
     driver.get(DM_CHANNEL_URL)
     time.sleep(LOAD_WAIT_TIME)
     driver.find_element_by_xpath(DM_TEXT_INPUT_XPATH).send_keys(f'{BOT_PREFIX}!sr' + Keys.RETURN)
@@ -419,7 +432,6 @@ def test_create_reminder(driver: webdriver.Chrome):
     print(message_text)
     time.sleep(REQUEST_WAIT_TIME)
     assert message_text == 'Reminder Created!'
-
 
 
 # Tests command and creation of user defined number of repeated reminders
@@ -443,7 +455,6 @@ def test_create_repeating_reminder(driver: webdriver.Chrome):
     assert message_text == 'Reminder Created!'
 
 
-
 # Tests command and creation of infinite repeated reminders
 def test_create_infinite_reminder(driver: webdriver.Chrome):
     time.sleep(REQUEST_WAIT_TIME)
@@ -461,7 +472,6 @@ def test_create_infinite_reminder(driver: webdriver.Chrome):
     print(message_text)
     time.sleep(REQUEST_WAIT_TIME)
     assert message_text == 'Reminder Created!'
-
 
 
 # Tests instantiation of reminder is one week from day of creation
@@ -507,9 +517,166 @@ def test_database_utils_exec():
     result = database_utils.exec(statement)
     print(result, result[0])
     assert result[0][0] > 0
+
+
 # Tests sql database connectivity
 def test_database_connection():
     assert database_utils.connection() != None
-"""
 
-#SAIM'S TESTS:
+
+# SAIM'S TESTS:
+def test_default_search(driver: webdriver.Chrome):
+    driver.get(UNIT_TEST_CHANNEL_URL)
+    time.sleep(LOAD_WAIT_TIME)
+    driver.find_element_by_xpath(TEXT_INPUT_XPATH).send_keys(f'{BOT_PREFIX}!search banana' + Keys.RETURN)
+    time.sleep(REQUEST_WAIT_TIME)
+    messages = driver.find_element_by_xpath(MESSAGE_CONTAINER_XPATH).find_elements_by_class_name(TEXT_MESSAGE_CLASS)
+
+    message_text1 = messages[-1].find_element_by_class_name(EMBED_MESSAGE_CLASS).find_element_by_class_name(
+        EMBED_MESSAGE_BODY_CLASS).text
+    message_text2 = messages[-2].find_element_by_class_name(EMBED_MESSAGE_CLASS).find_element_by_class_name(
+        EMBED_MESSAGE_BODY_CLASS).text
+    message_text3 = messages[-3].find_element_by_class_name(EMBED_MESSAGE_CLASS).find_element_by_class_name(
+        EMBED_MESSAGE_BODY_CLASS).text
+    message_text4 = messages[-4].find_element_by_class_name(EMBED_MESSAGE_CLASS).find_element_by_class_name(
+        EMBED_MESSAGE_BODY_CLASS).text
+    message_text5 = messages[-5].find_element_by_class_name(EMBED_MESSAGE_CLASS).find_element_by_class_name(
+        EMBED_MESSAGE_BODY_CLASS).text
+
+    assert 'banana' in message_text1.lower()
+    assert 'banana' in message_text2.lower()
+    assert 'banana' in message_text3.lower()
+    assert 'banana' in message_text4.lower()
+    assert 'banana' in message_text5.lower()
+
+
+def test_search_site(driver: webdriver.Chrome):
+    driver.find_element_by_xpath(TEXT_INPUT_XPATH).send_keys(f'{BOT_PREFIX}!search-site' + Keys.RETURN)
+    time.sleep(LOAD_WAIT_TIME)
+    messages = driver.find_element_by_xpath(MESSAGE_CONTAINER_XPATH).find_elements_by_class_name(TEXT_MESSAGE_CLASS)
+    message_text = messages[-1].find_element_by_class_name(EMBED_MESSAGE_CLASS).find_element_by_class_name(
+        EMBED_TITLE_CLASS).text
+    assert 'Which website do you want to search?' in message_text
+
+    driver.find_element_by_xpath(TEXT_INPUT_XPATH).send_keys('youtube.com' + Keys.RETURN)
+    time.sleep(LOAD_WAIT_TIME)
+    messages = driver.find_element_by_xpath(MESSAGE_CONTAINER_XPATH).find_elements_by_class_name(TEXT_MESSAGE_CLASS)
+    message_text = messages[-1].find_element_by_class_name(EMBED_MESSAGE_CLASS).find_element_by_class_name(
+        EMBED_TITLE_CLASS).text
+    assert 'What do you want to find?' in message_text
+
+    driver.find_element_by_xpath(TEXT_INPUT_XPATH).send_keys('banana' + Keys.RETURN)
+    time.sleep(LOAD_WAIT_TIME)
+    messages = driver.find_element_by_xpath(MESSAGE_CONTAINER_XPATH).find_elements_by_class_name(TEXT_MESSAGE_CLASS)
+
+    message_text1 = messages[-1].find_element_by_class_name(EMBED_MESSAGE_CLASS).find_element_by_class_name(
+        EMBED_TITLE_CLASS).find_element_by_class_name(EMBED_LINKED_TITLE_CLASS).text
+    message_text2 = messages[-2].find_element_by_class_name(EMBED_MESSAGE_CLASS).find_element_by_class_name(
+        EMBED_TITLE_CLASS).find_element_by_class_name(EMBED_LINKED_TITLE_CLASS).text
+    message_text3 = messages[-3].find_element_by_class_name(EMBED_MESSAGE_CLASS).find_element_by_class_name(
+        EMBED_TITLE_CLASS).find_element_by_class_name(EMBED_LINKED_TITLE_CLASS).text
+    message_text4 = messages[-4].find_element_by_class_name(EMBED_MESSAGE_CLASS).find_element_by_class_name(
+        EMBED_TITLE_CLASS).find_element_by_class_name(EMBED_LINKED_TITLE_CLASS).text
+    message_text5 = messages[-5].find_element_by_class_name(EMBED_MESSAGE_CLASS).find_element_by_class_name(
+        EMBED_TITLE_CLASS).find_element_by_class_name(EMBED_LINKED_TITLE_CLASS).text
+
+    assert 'banana' in message_text1.lower()
+    assert 'banana' in message_text2.lower()
+    assert 'banana' in message_text3.lower()
+    assert 'banana' in message_text4.lower()
+    assert 'banana' in message_text5.lower()
+
+
+def test_big_search(driver: webdriver.Chrome):
+    driver.find_element_by_xpath(TEXT_INPUT_XPATH).send_keys(f'{BOT_PREFIX}!big-search banana' + Keys.RETURN)
+    time.sleep(LOAD_WAIT_TIME)
+    messages = driver.find_element_by_xpath(MESSAGE_CONTAINER_XPATH).find_elements_by_class_name(TEXT_MESSAGE_CLASS)
+    message_text = messages[-1].find_element_by_class_name(EMBED_MESSAGE_CLASS).find_element_by_class_name(
+        EMBED_TITLE_CLASS).find_element_by_class_name(EMBED_LINKED_TITLE_CLASS).get_attribute('href')
+    assert 'https://letmegooglethat.com/?q=banana' in message_text.lower()
+
+
+def test_eight_ball(driver: webdriver.Chrome):
+    responses = [
+        'It is certain.',
+        'It is decidedly so.',
+        'Without a doubt',
+        'Yes - definetly',
+        'You may rely on it.',
+        'As I see it, yes.',
+        'Most likely.',
+        'Outlook good.',
+        'Yes.',
+        'Signs point to yes.',
+        'Reply hazy, try again',
+        'Ask again later.',
+        'Better not tell you now.',
+        'Cannot predict now',
+        'Concentrate and ask again.',
+        'My reply is no.',
+        'My sources say no.',
+        'Outlook not so good.',
+        'Very doubtful.'
+    ]
+    driver.find_element_by_xpath(TEXT_INPUT_XPATH).send_keys(f'{BOT_PREFIX}!8-ball did this work' + Keys.RETURN)
+    time.sleep(LOAD_WAIT_TIME)
+    messages = driver.find_element_by_xpath(MESSAGE_CONTAINER_XPATH).find_elements_by_class_name(TEXT_MESSAGE_CLASS)
+    message_text = messages[-1].find_element_by_class_name(EMBED_MESSAGE_CLASS).find_element_by_class_name(
+        EMBED_FIELD_NAME_CLASS).text
+    assert message_text in responses
+
+
+def test_rock_paper_scissors(driver: webdriver.Chrome):
+    valid_responses = [
+        "Yay! you won.",
+        "Oh no! you lost.",
+        "Tied!"
+    ]
+
+    driver.find_element_by_xpath(TEXT_INPUT_XPATH).send_keys(f'{BOT_PREFIX}!rock-paper-scissors' + Keys.RETURN)
+    time.sleep(LOAD_WAIT_TIME)
+    messages = driver.find_element_by_xpath(MESSAGE_CONTAINER_XPATH).find_elements_by_class_name(TEXT_MESSAGE_CLASS)
+    message_text = messages[-1].find_element_by_class_name(EMBED_MESSAGE_CLASS).find_element_by_class_name(
+        EMBED_TITLE_CLASS).text
+    assert message_text == "Choose rock paper or scissors!"
+
+    time.sleep(LOAD_WAIT_TIME / 2)
+    messages[-1].find_element_by_class_name(REACTION_CLASS).find_element_by_class_name(
+        INDIVIDUAL_REACTION_CLASS).click()
+    time.sleep(LOAD_WAIT_TIME / 2)
+
+    messages = driver.find_element_by_xpath(MESSAGE_CONTAINER_XPATH).find_elements_by_class_name(TEXT_MESSAGE_CLASS)
+    message_text = messages[-1].find_element_by_class_name(EMBED_MESSAGE_CLASS).find_element_by_class_name(
+        EMBED_TITLE_CLASS).text
+    assert message_text in valid_responses
+
+
+def test_guessing_game(driver: webdriver.Chrome):
+    valid_responses = [
+        "You gave up!",
+        "You guessed wrong! Try again.",
+        "Guess the number!",
+    ]
+
+    driver.find_element_by_xpath(TEXT_INPUT_XPATH).send_keys(f'{BOT_PREFIX}!guessing-game' + Keys.RETURN)
+    time.sleep(LOAD_WAIT_TIME)
+
+    flag = True
+    while flag:
+        messages = driver.find_element_by_xpath(MESSAGE_CONTAINER_XPATH).find_elements_by_class_name(TEXT_MESSAGE_CLASS)
+        message_text = messages[-1].find_element_by_class_name(EMBED_MESSAGE_CLASS).find_element_by_class_name(
+            EMBED_TITLE_CLASS).text
+
+        if message_text == "Yay! you won.":
+            assert message_text == "Yay! you won."
+            flag = False
+        elif message_text == "Oh no! you lost.":
+            assert message_text == "Oh no! you lost."
+            flag = False
+        else:
+            assert message_text in valid_responses
+
+            time.sleep(LOAD_WAIT_TIME / 2)
+            messages[-1].find_element_by_class_name(REACTION_CLASS).find_element_by_class_name(
+                INDIVIDUAL_REACTION_CLASS).click()
+            time.sleep(LOAD_WAIT_TIME)
