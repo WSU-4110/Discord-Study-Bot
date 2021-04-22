@@ -29,7 +29,8 @@ class TicketCommands(commands.Cog, name='Ticket Commands'):
             return
 
         # Prompt the user for the name of the ticket category to be made, cancel if it times out
-        name = await EmbedFactory.prompt(ctx, self.bot, "Enter the name for the ticket category for this server.")
+        name = await EmbedFactory.prompt(ctx, self.bot, "Enter the name for the ticket category for this server.",
+                                         check=lambda rctx: rctx.author == ctx.author)
         if name is None:
             return
 
