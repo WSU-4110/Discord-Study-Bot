@@ -7,31 +7,35 @@ import random
 import json
 from models import base_db_model
 
-#This class uses both json and web scraping to get quotes from the internet and send to users
+
+"""This class pulls inspirational quotes from the web and sends to a specified user"""
+
 class Inspire(base_db_model.BaseDBModel):
     def __init__(self):
         pass
-
+    # Utilizes json to request random quote related to sarcastic programming humor
     def get_cs_satire(self):
         url = 'http://quotes.stormconsultancy.co.uk/random.json'
         r = requests.get(url)
         quote = r.json()
         return quote['author'] + ':' + quote['quote']
 
+    # Utilizes json to request inspirational quotes
     def get_inspiration(self):
         url = 'https://zenquotes.io/api/random'
         r = requests.get(url)
         quote = r.json()
         return quote[0]['a'] + ': ' + quote[0]['q']
 
-    # This method uses web scraping techniques to get quotes
+    # This method uses web scraping techniques to get quotes for motivation
     def get_cs_motivated(self):
         authors = []
         quotes = []
         url = 'https://fortrabbit.github.io/quotes/'
         webpage = requests.get(url)
         soup = BeautifulSoup(webpage.text, "html.parser")
-        #try catch around web scraping in case html tags have been modified
+
+        # try catch around web scraping in case html tags have been modified
         try:
             quote_text = soup.findAll('p', attrs={'class': 'type-l p-m'})
             quote_author = soup.findAll('div', attrs={'class': 'm-top-m'})
@@ -47,7 +51,7 @@ class Inspire(base_db_model.BaseDBModel):
             quote = quote_content.text.strip().split('\n')[0]
             quotes.append(quote)
 
-        #Try catch in case number of quotes changes
+        # Try catch in case number of quotes changes
         try:
             rand_num = random.randint(1, len(quotes))
         except Exception as e:
