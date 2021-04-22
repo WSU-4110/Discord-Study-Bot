@@ -3,12 +3,15 @@ from discord.ext import commands
 from utils import config as cfg, time_utils, timer_priority_queue
 from models import reminder
 
+"""This cog implements commands used to create reminder objects"""
+
 
 class ReminderCommands(commands.Cog, name="Reminder Commands"):
-    '''These are reminder commands'''
 
     def __init__(self, bot):
         self.bot = bot
+
+    """One time recurrence reminder command"""
 
     @commands.command(name="set-reminder", aliases=["sr"])
     async def set_reminder(self, ctx):
@@ -64,15 +67,19 @@ class ReminderCommands(commands.Cog, name="Reminder Commands"):
         else:
             reminder_obj = reminder.Reminder(userid, msg_str, ctx.message, day, hour, minute, 0)
 
-        reminder_obj.insert(['message_id', 'userid', 'channel_id', 'start_time', 'end_time', 'msg', 'recurrence', 'roles'])
+        # inserts object into database
+        reminder_obj.insert(
+            ['message_id', 'userid', 'channel_id', 'start_time', 'end_time', 'msg', 'recurrence', 'roles'])
         timer_priority_queue.TimerPriorityQueue.get_instance().add_task(reminder_obj)
 
-        # output
+        # outputs message to discord channel
         embed = discord.Embed(title="Reminder Created!",
                               description=repr(reminder_obj),
                               color=cfg.colors.SUCCESS)
         embed.set_author(name=ctx.author.display_name, icon_url=ctx.author.avatar_url)
         await ctx.send(embed=embed)
+
+    """Infinitely recurring reminder command"""
 
     @commands.command(name="set-infinite-reminder", aliases=["sir"])
     async def set_infinite_reminder(self, ctx):
@@ -127,16 +134,20 @@ class ReminderCommands(commands.Cog, name="Reminder Commands"):
             msg_str = ' '.join(msg)
             reminder_obj = reminder.Reminder(userid, msg_str, ctx.message, day, hour, minute, -1)
 
-        reminder_obj.insert(['message_id', 'userid', 'channel_id', 'start_time', 'end_time', 'msg', 'recurrence', 'roles'])
+        # inserts reminder object information to database
+        reminder_obj.insert(
+            ['message_id', 'userid', 'channel_id', 'start_time', 'end_time', 'msg', 'recurrence', 'roles'])
 
         timer_priority_queue.TimerPriorityQueue.get_instance().add_task(reminder_obj)
 
-        # output
+        # outputs message to discord channel
         embed = discord.Embed(title="Reminder Created!",
                               description=repr(reminder_obj),
                               color=cfg.colors.SUCCESS)
         embed.set_author(name=ctx.author.display_name, icon_url=ctx.author.avatar_url)
         await ctx.send(embed=embed)
+
+    """User defined number of reminders command"""
 
     @commands.command(name="set-repetitive-reminder", aliases=["srr"])
     async def set_repetitive_reminder(self, ctx):
@@ -183,7 +194,7 @@ class ReminderCommands(commands.Cog, name="Reminder Commands"):
                                       check=lambda message: message.author == ctx.author)
         msg = msg.content.split(' ')
 
-        # asks user for message
+        # asks user for how many instances the reminder should occur
         embed = discord.Embed(title="How many weeks should the reminder repeat?",
                               description="example: 3",
                               color=cfg.colors.WSU_GOLD)
@@ -202,11 +213,13 @@ class ReminderCommands(commands.Cog, name="Reminder Commands"):
             msg_str = ' '.join(msg)
             reminder_obj = reminder.Reminder(userid, msg_str, ctx.message, day, hour, minute, int(repetitions))
 
-        reminder_obj.insert(['message_id', 'userid', 'channel_id', 'start_time', 'end_time', 'msg', 'recurrence', 'roles'])
+        # inserts reminder information into the database
+        reminder_obj.insert(
+            ['message_id', 'userid', 'channel_id', 'start_time', 'end_time', 'msg', 'recurrence', 'roles'])
 
         timer_priority_queue.TimerPriorityQueue.get_instance().add_task(reminder_obj)
 
-        # output
+        # outputs message to discord channel
         embed = discord.Embed(title="Reminder Created!",
                               description=repr(reminder_obj),
                               color=cfg.colors.SUCCESS)
