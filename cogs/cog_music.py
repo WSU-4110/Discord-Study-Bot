@@ -36,6 +36,8 @@ class MusicCommands(commands.Cog, name="Music Commands"):
             pass
 
         music_queue.MusicQueue.get_instance().add_url(url, guild.id, ctx)
+        if guild.id not in config.server_playing_music.keys():
+            config.server_playing_music[guild.id] = False
 
         # voice = discord.utils.get(self.bot.voice_clients, guild=guild)
 
