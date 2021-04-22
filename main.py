@@ -8,7 +8,7 @@ from utils import database_utils, async_tasks, config, timer_priority_queue
 # from dotenv import load_dotenv
 
 bot = commands.Bot(
-    command_prefix="!",  # Change to desired prefix
+    command_prefix="ss!",  # Change to desired prefix
     case_insensitive=True,  # Commands aren't case-sensitive
     intents=discord.Intents.all()
 )
@@ -84,7 +84,14 @@ extensions = [
     'cogs.cog_profile',
     'cogs.cog_ticket',
     'cogs.cog_todolist',
+    'cogs.cog_easteregg'
 ]
+
+
+@bot.event
+async def on_command_error(ctx, error):
+    await ctx.send(f'Error! {error}')
+
 
 if __name__ == '__main__':  # Ensures this is the file being ran
     for extension in extensions:
