@@ -11,6 +11,14 @@ class ToDoListCommands(commands.Cog, name="ToDoList Commands"):
     def __init__(self, bot):
         self.bot = bot
 
+    async def cog_before_invoke(self, ctx):
+        """
+        This method is called before any command executes.
+        """
+        user = ctx.author
+        if user.id not in cfg.user_tzs:  # if user has not set their timezone, add them to the DB
+            await self.bot.get_cog("Profile Commands").init_user(ctx)
+
     @commands.command(name="create-item", aliases=["todo"])  # command to create a note
     async def create_item(self, ctx, time: str, *msg: str):
         """ Creates a ToDoList item."""
