@@ -88,7 +88,8 @@ extensions = [
     'cogs.cog_ticket',
     'cogs.cog_todolist',
     'cogs.cog_easteregg',
-    'cogs.cog_music'
+    'cogs.cog_music',
+    'cogs.cog_inspire'
 ]
 
 
