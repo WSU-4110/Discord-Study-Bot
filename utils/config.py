@@ -3,7 +3,7 @@ from typing import *
 
 note_dict = dd(list)
 
-ticket_channel_dict = {}
+ticket_channels = {}
 server_ticket_ctgs = {}
 
 author_ids = [189533543993442304,

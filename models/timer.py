@@ -22,8 +22,8 @@ class Timer(base_db_model.BaseDBModel):
             self._end_time = time_utils.str_to_datetime(self._end_time.strftime("%Y-%m-%d %H:%M"))
         self._msg = msg  # remaining message text
         self._discord_message = discord_message  # message object
-        self.message_id = self._discord_message.id
-        self.channel_id = self._discord_message.channel.id
+        self._message_id = self._discord_message.id
+        self._channel_id = self._discord_message.channel.id
 
     def __repr__(self):
         """ Get string representation of Timer instance information. """
@@ -64,6 +64,16 @@ class Timer(base_db_model.BaseDBModel):
         """ Message object from Timer creation request. """
         return self._discord_message
 
+    @property
+    def message_id(self):
+        """ ID of Message object. """
+        return self._message_id
+
+    @property
+    def channel_id(self):
+        """ ID of Message object. """
+        return self._channel_id
+
     # ----- #
 
     def formatted_discord_message(self):
@@ -77,7 +87,6 @@ class Timer(base_db_model.BaseDBModel):
         return self.end_time - dt.datetime.utcnow()
 
     def embed(self):
-
         """ Returns Discord Embed representation for message sent when Timer instance is activated. """
 
         return discord.Embed(
