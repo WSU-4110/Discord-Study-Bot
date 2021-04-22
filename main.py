@@ -5,10 +5,11 @@ from models import timer, reminder, note, ticket
 from keep_alive import keep_alive
 from discord.ext import commands
 from utils import database_utils, async_tasks, config, timer_priority_queue
+
 # from dotenv import load_dotenv
 
 bot = commands.Bot(
-    command_prefix="ss!",  # Change to desired prefix
+    command_prefix="!",  # Change to desired prefix
     case_insensitive=True,  # Commands aren't case-sensitive
     intents=discord.Intents.all()
 )
