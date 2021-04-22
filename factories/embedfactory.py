@@ -6,18 +6,21 @@ from typing import *
 
 class EmbedFactory:
     @staticmethod
-    async def prompt(ctx, bot, desc: str, body: str = None, *, check, timeout: int = 60, delete: bool = False) -> Optional[str]:
+    async def prompt(ctx, bot, desc: str, body: str = None, *, check, timeout: int = 60, delete: bool = False) -> \
+    Optional[str]:
+        """ Prompts the user for text input. """
+
         embed = discord.Embed(
             description=desc,
             colour=cfg.colors.WSU_GOLD
         )
-        if body is not None:
+        if body is not None:  # optional normal text body
             prompt = await ctx.send(body, embed=embed)
         else:
             prompt = await ctx.send(embed=embed)
 
-        try:
-            response = await bot.wait_for('message', check=check, timeout=60)
+        try:  # get user response
+            response = await bot.wait_for('message', check=check, timeout=timeout)
         except asyncio.TimeoutError:
             await ctx.send(embed=discord.Embed(
                 description="Took too long to respond!",
@@ -25,9 +28,9 @@ class EmbedFactory:
             ))
             return
 
-        ans = response.content
+        ans = response.content  # extracting message content
 
-        if delete:
+        if delete:  # optionally delete prompt messages
             await prompt.delete()
             await response.delete()
 
@@ -35,6 +38,8 @@ class EmbedFactory:
 
     @staticmethod
     async def success(ctx, desc: str):
+        """ Sends a success embed. """
+
         await ctx.send(embed=discord.Embed(
             description=desc,
             colour=cfg.colors.SUCCESS
@@ -42,6 +47,8 @@ class EmbedFactory:
 
     @staticmethod
     async def error(ctx, desc: str):
+        """ Sends a failure embed. """
+
         await ctx.send(embed=discord.Embed(
             description=desc,
             colour=cfg.colors.ERROR
