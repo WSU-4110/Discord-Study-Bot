@@ -1,13 +1,15 @@
-from collections import defaultdict as dd, namedtuple as nt
+from collections import defaultdict as dd
 from typing import *
 
 note_dict = dd(list)
 music_dict = dd(list)
 
-ticket_channels = {}
-server_ticket_ctgs = {}
+ticket_channels: Dict[int, int] = {}
+server_ticket_ctgs: Dict[int, int] = {}
 
-user_tzs = {}
+user_tzs: Dict[int, str] = {}
+
+server_playing_music: Dict[int, bool] = {}
 
 author_ids = [189533543993442304,
               154752622262353921,
