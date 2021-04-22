@@ -1,40 +1,33 @@
 from bs4 import BeautifulSoup
-import pandas as pd
 import requests
-import urllib.request
-import time
 import random
-import json
 from models import base_db_model
 
 
-"""This class pulls inspirational quotes from the web and sends to a specified user"""
-
+# This class uses both json and web scraping to get quotes from the internet and send to users
 class Inspire(base_db_model.BaseDBModel):
     def __init__(self):
         pass
-    # Utilizes json to request random quote related to sarcastic programming humor
+
     def get_cs_satire(self):
         url = 'http://quotes.stormconsultancy.co.uk/random.json'
         r = requests.get(url)
         quote = r.json()
         return quote['author'] + ':' + quote['quote']
 
-    # Utilizes json to request inspirational quotes
     def get_inspiration(self):
         url = 'https://zenquotes.io/api/random'
         r = requests.get(url)
         quote = r.json()
         return quote[0]['a'] + ': ' + quote[0]['q']
 
-    # This method uses web scraping techniques to get quotes for motivation
+    # This method uses web scraping techniques to get quotes
     def get_cs_motivated(self):
         authors = []
         quotes = []
         url = 'https://fortrabbit.github.io/quotes/'
         webpage = requests.get(url)
         soup = BeautifulSoup(webpage.text, "html.parser")
-
         # try catch around web scraping in case html tags have been modified
         try:
             quote_text = soup.findAll('p', attrs={'class': 'type-l p-m'})
