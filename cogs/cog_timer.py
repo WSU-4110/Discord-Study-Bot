@@ -2,6 +2,7 @@ import discord
 from discord.ext import commands
 from utils import config as cfg, time_utils, timer_priority_queue
 from models import timer
+from factories.embedfactory import EmbedFactory
 
 
 class TimedCommands(commands.Cog, name="Timed Commands"):
@@ -23,17 +24,11 @@ class TimedCommands(commands.Cog, name="Timed Commands"):
         try:
             time = int(time)
         except ValueError:  # not an integer
-            await ctx.send(embed=discord.Embed(
-                description="Non-numeric timer duration given!",
-                colour=cfg.colors.ERROR
-            ))
+            await EmbedFactory.error(ctx, "Non-numeric timer duration given!")
             return
 
         if not 1 <= time <= 120:  # not in allowed range of integers
-            await ctx.send(embed=discord.Embed(
-                description="Timer duration not in acceptable range! [1 .. 120]",
-                colour=cfg.colors.ERROR
-            ))
+            await EmbedFactory.error(ctx, "Timer duration not in acceptable range! [1 .. 120]")
             return
 
         # Timer creation
@@ -44,10 +39,7 @@ class TimedCommands(commands.Cog, name="Timed Commands"):
         timer_priority_queue.TimerPriorityQueue.get_instance().add_task(timer_obj)
         timer_obj.insert(['message_id', 'userid', 'channel_id', 'start_time', 'end_time', 'msg'])
 
-        await ctx.send(embed=discord.Embed(
-            description="Timer created!\n",
-            colour=cfg.colors.SUCCESS
-        ))
+        await EmbedFactory.success(ctx, "Timer created!")
 
     @commands.command(name="list-timers", aliases=['lt'])
     async def list_timers(self, ctx, limit=None):
@@ -65,10 +57,7 @@ class TimedCommands(commands.Cog, name="Timed Commands"):
 
         # if the user has no timers, exit
         if not user_timers:
-            await ctx.send(embed=discord.Embed(
-                description="No timers found!",
-                colour=cfg.colors.ERROR
-            ))
+            await EmbedFactory.error(ctx, "No timers found!")
             return
 
         # Sanitize limit input
@@ -119,10 +108,7 @@ class TimedCommands(commands.Cog, name="Timed Commands"):
 
         # If user has no timers, exit
         if not user_timers:
-            await ctx.send(embed=discord.Embed(
-                description="No timers found!",
-                colour=cfg.colors.ERROR
-            ))
+            await EmbedFactory.error(ctx, "No timers found!")
             return
 
         t = user_timers[0]  # earliest expiring timer
@@ -166,20 +152,14 @@ class TimedCommands(commands.Cog, name="Timed Commands"):
 
         # If user has no timers, exit
         if not user_timers:
-            await ctx.send(embed=discord.Embed(
-                description="No timers found!",
-                colour=cfg.colors.ERROR
-            ))
+            await EmbedFactory.error(ctx, "No timers found!")
             return
 
         # Validate index input
         try:
             idx = int(idx)
         except ValueError:  # not an integer
-            await ctx.send(embed=discord.Embed(
-                description="Non-numeric index given!",
-                colour=cfg.colors.ERROR
-            ))
+            await EmbedFactory.error(ctx, "Non-numeric index given!")
             return
 
         if not 1 <= idx <= len(user_timers):  # not in accepted range
@@ -194,10 +174,7 @@ class TimedCommands(commands.Cog, name="Timed Commands"):
             target.delete(target.message_id)
             timer_priority_queue.TimerPriorityQueue.get_instance().remove_timer(target.message_id)
 
-            await ctx.send(embed=discord.Embed(
-                description="Timer deleted!",
-                colour=cfg.colors.SUCCESS
-            ))
+            await EmbedFactory.success(ctx, "Timer deleted!")
 
     @commands.command(name="unset-highest-timer", aliases=['uht'])
     async def unset_highest_timer(self, ctx):
@@ -222,20 +199,14 @@ class TimedCommands(commands.Cog, name="Timed Commands"):
 
         # If user has no timers, exit
         if not user_timers:
-            await ctx.send(embed=discord.Embed(
-                description="No timers found!",
-                colour=cfg.colors.ERROR
-            ))
+            await EmbedFactory.error(ctx, "No timers found!")
         else:
             # Delete from database
             for target in user_timers:
                 target.delete(target.message_id)
                 timer_priority_queue.TimerPriorityQueue.get_instance().remove_timer(target.message_id)
 
-            await ctx.send(embed=discord.Embed(
-                description="All timers deleted!",
-                colour=cfg.colors.SUCCESS
-            ))
+            await EmbedFactory.success(ctx, "All timers deleted!")
 
 
 def setup(bot):
