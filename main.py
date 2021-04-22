@@ -2,10 +2,10 @@ import os
 import datetime as dt
 import discord
 from models import timer, reminder, note, ticket
+from factories.embedfactory import EmbedFactory
 from keep_alive import keep_alive
 from discord.ext import commands
 from utils import database_utils, async_tasks, config, timer_priority_queue
-
 # from dotenv import load_dotenv
 
 bot = commands.Bot(
@@ -91,7 +91,7 @@ extensions = [
 
 @bot.event
 async def on_command_error(ctx, error):
-    await ctx.send(f'Error! {error}')
+    await EmbedFactory.error(ctx, f'Error! `{error}`')
 
 
 if __name__ == '__main__':  # Ensures this is the file being ran
