@@ -1,14 +1,20 @@
 import time
+from collections import Counter
+from unittest.mock import Mock, MagicMock
 
 import pytest
 from selenium import webdriver
 from selenium.webdriver.chrome.options import Options
 from selenium.webdriver.common.keys import Keys
-
+from utils import timer_priority_queue
+from models import timer
+from unittest import mock
 
 DISCORD_EMAIL = 'go2977@wayne.edu'
 DISCORD_PASSWORD = 'alph@bet@123'
-REQUEST_WAIT_TIME = 10
+DISCORD_USER_ID = 831306913819394068
+BOT_PREFIX = 'lb'
+REQUEST_WAIT_TIME = 5
 COMMAND_WAIT_TIME = 60
 
 UNIT_TEST_CHANNEL_URL = 'https://discord.com/channels/801966497235730472/828825916573745185'
@@ -33,11 +39,16 @@ def driver():
     # driver = webdriver.Chrome()  # initiate a webdriver instance through Selenium
     driver.get('https://discord.com/app')  # go to Discord's login page
     # enter email
-    driver.find_element_by_xpath('/html/body/div/div[2]/div/div[2]/div/div/form/div/div/div[1]/div[3]/div[1]/div/div[2]/input').send_keys(DISCORD_EMAIL)
+    driver.find_element_by_xpath(
+        '/html/body/div/div[2]/div/div[2]/div/div/form/div/div/div[1]/div[3]/div[1]/div/div[2]/input').send_keys(
+        DISCORD_EMAIL)
     # enter password
-    driver.find_element_by_xpath('/html/body/div/div[2]/div/div[2]/div/div/form/div/div/div[1]/div[3]/div[2]/div/input').send_keys(DISCORD_PASSWORD)
+    driver.find_element_by_xpath(
+        '/html/body/div/div[2]/div/div[2]/div/div/form/div/div/div[1]/div[3]/div[2]/div/input').send_keys(
+        DISCORD_PASSWORD)
     # click login button
-    driver.find_element_by_xpath('/html/body/div/div[2]/div/div[2]/div/div/form/div/div/div[1]/div[3]/button[2]').click()
+    driver.find_element_by_xpath(
+        '/html/body/div/div[2]/div/div[2]/div/div/form/div/div/div[1]/div[3]/button[2]').click()
     time.sleep(REQUEST_WAIT_TIME)  # wait for request to process
     driver.get(UNIT_TEST_CHANNEL_URL)
     time.sleep(REQUEST_WAIT_TIME)
@@ -53,9 +64,8 @@ def test_unit_test_channel(driver: webdriver.Chrome):
 
 
 def test_ping_command(driver: webdriver.Chrome):
-    time.sleep(REQUEST_WAIT_TIME)
+    driver.find_element_by_xpath(TEXT_INPUT_XPATH).send_keys(f'{BOT_PREFIX}!ping' + Keys.RETURN)
     print(driver.current_url)
-    driver.find_element_by_xpath(TEXT_INPUT_XPATH).send_keys('lb!ping' + Keys.RETURN)
     time.sleep(REQUEST_WAIT_TIME)
     messages = driver.find_element_by_xpath(MESSAGE_CONTAINER_XPATH).find_elements_by_class_name(TEXT_MESSAGE_CLASS)
     message_text = messages[-1].find_element_by_class_name(TEXT_MESSAGE_BODY_CLASS).text
@@ -63,7 +73,7 @@ def test_ping_command(driver: webdriver.Chrome):
 
 
 def test_create_todo(driver: webdriver.Chrome):
-    driver.find_element_by_xpath(TEXT_INPUT_XPATH).send_keys('lb!create-item 1 test' + Keys.RETURN)
+    driver.find_element_by_xpath(TEXT_INPUT_XPATH).send_keys(f'{BOT_PREFIX}!create-item 1 test' + Keys.RETURN)
     time.sleep(REQUEST_WAIT_TIME)
     messages = driver.find_element_by_xpath(MESSAGE_CONTAINER_XPATH).find_elements_by_class_name(TEXT_MESSAGE_CLASS)
     message_text = messages[-1].find_element_by_class_name(EMBED_MESSAGE_CLASS).find_element_by_class_name(EMBED_MESSAGE_BODY_CLASS).text
@@ -77,3 +87,37 @@ def test_create_todo(driver: webdriver.Chrome):
     driver.get(UNIT_TEST_CHANNEL_URL)
     time.sleep(REQUEST_WAIT_TIME)
 
+
+def test_timer_pqueue_singleton_instance():
+    instance = timer_priority_queue.TimerPriorityQueue.get_instance()
+    assert instance is not None
+    instance_2 = timer_priority_queue.TimerPriorityQueue.get_instance()
+    assert instance_2 is not None
+    assert instance == instance_2
+
+
+# pytest runs as a separate process, and therefore the following must be mocked since the memory space is different
+def test_timer_pqueue_user_map():
+    def mock_dict(d):  # https://stackoverflow.com/questions/38299103/how-to-mock-a-dictionary-in-python
+        m = MagicMock()
+        m.__getitem__.side_effect = d.__getitem__
+        return m
+    timer_priority_queue.TimerPriorityQueue.get_instance().user_map = mock_dict({DISCORD_USER_ID: ['Test']})
+    user_map = timer_priority_queue.TimerPriorityQueue.get_instance().user_map
+    assert user_map[DISCORD_USER_ID] is not None
+
+
+def test_timer_pqueue_alarm_map():
+    # a Counter is just a dict
+    def mock_counter(c):  # https://stackoverflow.com/questions/38299103/how-to-mock-a-dictionary-in-python
+        m = MagicMock()
+        m.__getitem__.side_effect = c.__getitem__
+        return m
+    timer_priority_queue.TimerPriorityQueue.get_instance().alarm_map = mock_counter(Counter({DISCORD_USER_ID: 1}))
+    alarm_map = timer_priority_queue.TimerPriorityQueue.get_instance().alarm_map
+    assert alarm_map[DISCORD_USER_ID] is not None
+
+
+def test_timer_pqueue_peek():
+    timer_priority_queue.TimerPriorityQueue.get_instance().peek = Mock(return_value=timer.Timer)  # https://realpython.com/python-mock-library/#configuring-your-mock
+    assert timer_priority_queue.TimerPriorityQueue.get_instance().peek().__name__ == 'Timer'
