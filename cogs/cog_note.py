@@ -14,6 +14,7 @@ class NotesCommands(commands.Cog, name="Notes Commands"):
     # *** commands begin below ***
     @commands.command(name="create-note", aliases=["cn"])  # command to create a note
     async def create_note(self, ctx, *, msg):
+        """ Creates a note."""
         userid = ctx.message.author.id  # retrieving userid to be used as key in dictionary
         msg_id = ctx.message.id
         singular_note = note.Note(msg_id, userid, msg)  # Note object created using message entered by user
@@ -29,7 +30,7 @@ class NotesCommands(commands.Cog, name="Notes Commands"):
 
     @commands.command(name="list-notes", aliases=["ln"])  # command to list notes
     async def list_notes(self, ctx):
-        """ list notes """
+        """ Lists all available notes."""
         userid = ctx.message.author.id  # user ID used as key in dictionary
         i = 1
         embed = discord.Embed(title=f"Notes",
@@ -45,7 +46,7 @@ class NotesCommands(commands.Cog, name="Notes Commands"):
 
     @commands.command(name="delete-note", aliases=["dn"])  # command to delete note
     async def delete_note(self, ctx):
-        """ Delete user notes """
+        """ Deletes a note."""
         await self.list_notes(ctx)
         try:
             # asks user for what they want to search for

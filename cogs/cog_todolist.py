@@ -13,6 +13,7 @@ class ToDoListCommands(commands.Cog, name="ToDoList Commands"):
 
     @commands.command(name="create-item", aliases=["todo"])  # command to create a note
     async def create_item(self, ctx, time: str, *msg: str):
+        """ Creates a todo item."""
         userid = ctx.author.id
 
         # Timer creation
