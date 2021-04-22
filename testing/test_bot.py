@@ -1,17 +1,17 @@
 import time
+import datetime as dt
 from collections import Counter
 from unittest.mock import Mock, MagicMock
-
 import pytest
 from selenium import webdriver
 from selenium.webdriver.chrome.options import Options
 from selenium.webdriver.common.keys import Keys
-from utils import timer_priority_queue
+from utils import timer_priority_queue, time_utils
 from models import timer
 import os
 
 try:
-    IS_TRAVIS = os.environ['TRAVIS'] # https://docs.travis-ci.com/user/environment-variables/
+    IS_TRAVIS = os.environ['TRAVIS']  # https://docs.travis-ci.com/user/environment-variables/
 except:
     IS_TRAVIS = False
 
@@ -33,6 +33,7 @@ TEXT_MESSAGE_BODY_CLASS = 'markup-2BOw-j'
 
 EMBED_MESSAGE_CLASS = 'grid-1nZz7S'
 EMBED_MESSAGE_BODY_CLASS = 'embedDescription-1Cuq9a'
+EMBED_MESSAGE_TITLE_CLASS = 'embedTitle-3OXDkz'
 
 
 @pytest.fixture(scope="session")
@@ -161,17 +162,17 @@ def test_delete_note(driver: webdriver.Chrome):
 
 
 def test_curr_est_offset():
-    curr_est_offset()  # calling method
-    assert -4  # checking if it matches
+    offset = time_utils.curr_est_offset()  # calling method
+    assert offset == -4  # checking if it matches
 
 
 def test_orig_to_utc():
     a_time = dt.datetime.now()
-    a_time_2 = orig_to_utc(a_time)
-    assert a_time_2 == dt.datetime.utcnow()  # checking if it matches
+    a_time_2 = time_utils.orig_to_utc(a_time)
+    assert a_time_2 <= dt.datetime.utcnow()  # checking if it matches
 
 
 def test_utc_to_dest():
     a_time = dt.datetime.now()
-    a_time_2 = orig_to_utc(a_time)
-    assert utc_to_dest(a_time_2, 'EST') == a_time  # checking if it matches    
+    a_time_2 = time_utils.orig_to_utc(a_time)
+    assert time_utils.utc_to_dest(a_time_2, 'EST') == a_time  # checking if it matches
