@@ -1,12 +1,20 @@
 import mysql.connector
+import os
+from dotenv import load_dotenv
+
+load_dotenv()
+_user = os.getenv("DB_USER")
+_password = os.getenv("DB_PASS")
+_host = os.getenv("DB_HOST")
+_database = os.getenv("DB_NAME")
 
 
 def connection():
     """ create a connection to the database """
-    return mysql.connector.connect(user='u244966988_dpy',
-                                   password='Qwerty123',
-                                   host='sql400.main-hosting.eu',
-                                   database='u244966988_discord')
+    return mysql.connector.connect(user=_user,
+                                   password=_password,
+                                   host=_host,
+                                   database=_database)
 
 
 def exec(statement, table_name=None, commit=True):
