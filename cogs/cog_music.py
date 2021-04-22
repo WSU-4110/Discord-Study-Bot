@@ -20,9 +20,7 @@ class MusicCommands(commands.Cog, name="Music Commands"):
         """ Plays sounds with youtube video link """
 
         guild = ctx.guild
-        file_name = f"song_{guild}.mp3"
 
-        song_there = os.path.isfile(file_name)
         vc = ctx.author.voice
         if vc is None:
             await EmbedFactory.error(ctx, "Not in a voice channel!")
@@ -38,37 +36,6 @@ class MusicCommands(commands.Cog, name="Music Commands"):
         music_queue.MusicQueue.get_instance().add_url(url, guild.id, ctx)
         if guild.id not in config.server_playing_music.keys():
             config.server_playing_music[guild.id] = False
-
-        # voice = discord.utils.get(self.bot.voice_clients, guild=guild)
-
-        # if not voice.is_playing() or not config.server_playing_music[guild.id]:
-        #     try:
-        #         if song_there:
-        #             os.remove(file_name)
-        #     except PermissionError:
-        #         await ctx.send("Wait for the current playing music to end or use the 'stop' command")
-        #         return
-        #
-        #     await EmbedFactory.success(ctx, "Downloading! please wait a moment...")
-        #
-        #     ydl_opts = {
-        #         'format': 'bestaudio/best',
-        #         'postprocessors': [{
-        #             'key': 'FFmpegExtractAudio',
-        #             'preferredcodec': 'mp3',
-        #             'preferredquality': '192',
-        #         }],
-        #     }
-        #     with youtube_dl.YoutubeDL(ydl_opts) as ydl:
-        #         ydl.download([music_queue.MusicQueue.get_instance().get_top(guild.id)])
-        #     for file in os.listdir("./"):
-        #         if file.endswith(".mp3"):
-        #             os.rename(file, file_name)
-        #     await EmbedFactory.success(ctx, "Playing track!")
-        #     voice.play(discord.FFmpegPCMAudio(file_name))
-        #     config.server_playing_music[guild.id] = True
-        # else:
-        #     pass
 
     @commands.command()
     async def play_next_song(self, ctx, url):

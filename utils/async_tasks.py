@@ -70,8 +70,11 @@ async def check_music_status(bot):
     for guild_id in config.server_playing_music.keys():
         print(guild_id)
         guild = bot.get_guild(guild_id)
-        voice = discord.utils.get(bot.voice_clients, guild=guild)
-        if not voice.is_playing() and len(music_queue.MusicQueue.get_instance().items[guild_id]) > 0:
-            config.server_playing_music[guild_id] = False
-            song_tuple = music_queue.MusicQueue.get_instance().get_top(guild_id)
-            await bot.get_cog("Music Commands").play_next_song(song_tuple[1], song_tuple[0])
+        try:
+            voice = discord.utils.get(bot.voice_clients, guild=guild)
+            if not voice.is_playing() and len(music_queue.MusicQueue.get_instance().items[guild_id]) > 0:
+                config.server_playing_music[guild_id] = False
+                song_tuple = music_queue.MusicQueue.get_instance().get_top(guild_id)
+                await bot.get_cog("Music Commands").play_next_song(song_tuple[1], song_tuple[0])
+        except:
+            pass
