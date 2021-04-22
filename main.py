@@ -1,13 +1,16 @@
 import os
 import datetime as dt
-from models import timer, reminder, note
+import discord
+from models import timer, reminder, note, ticket
 from keep_alive import keep_alive
 from discord.ext import commands
-from utils import database_utils, async_tasks, config
+from utils import database_utils, async_tasks, config, timer_priority_queue
+# from dotenv import load_dotenv
 
 bot = commands.Bot(
     command_prefix="!",  # Change to desired prefix
-    case_insensitive=True  # Commands aren't case-sensitive
+    case_insensitive=True,  # Commands aren't case-sensitive
+    intents=discord.Intents.all()
 )
 
 
@@ -19,7 +22,7 @@ async def reinit_queue():
             if dt.datetime.now() <= end_time:
                 orig_channel = bot.get_channel(channel_id)
                 orig_message = await orig_channel.fetch_message(message_id)
-                config.timer_pqueue.add_task(
+                timer_priority_queue.TimerPriorityQueue.get_instance().add_task(
                     timer.Timer(user_id, 0, msg, orig_message, start_time=start_time, end_time=end_time))
         except:
             pass
@@ -34,7 +37,7 @@ async def reinit_queue():
                 content = orig_message.content.split(' ')
                 rem = reminder.Reminder(user_id, msg, orig_message, content[1], int(content[2]), int(content[3]),
                                         recurrence)
-                config.timer_pqueue.add_task(rem)
+                timer_priority_queue.TimerPriorityQueue.get_instance().add_task(rem)
         except:
             pass
 
@@ -47,6 +50,20 @@ async def reinit_queue():
         except Exception as e:
             pass
 
+    tickets = database_utils.exec("SELECT * FROM TICKETS")
+    for message_id, user_id, channel_id, question, roles in tickets:
+        try:
+            ticket_obj = ticket.Ticket(message_id, user_id, channel_id, question, roles)
+            print(user_id)
+            config.ticket_channels[channel_id] = ticket_obj
+        except Exception as e:
+            pass
+
+    ticket_categories = database_utils.exec("SELECT * FROM SERVER_TICKET_CATEGORIES")
+    for server_id, ctg_id in ticket_categories:
+        print(server_id, ctg_id)
+        config.server_ticket_ctgs[server_id] = ctg_id
+
 
 @bot.event
 async def on_ready():  # When the bot is ready
@@ -57,9 +74,6 @@ async def on_ready():  # When the bot is ready
     print(bot.user)  # Prints the bot's username and identifier
     await async_tasks.run_tasks()
 
-@bot.event
-async def on_command_error(ctx, error):
-    await ctx.send(f'Error! {error}')
 
 extensions = [
     'cogs.cog_example',  # Same name as it would be if you were importing it
@@ -70,7 +84,6 @@ extensions = [
     'cogs.cog_profile',
     'cogs.cog_ticket',
     'cogs.cog_todolist',
-    'cogs.cog_easteregg'
 ]
 
 if __name__ == '__main__':  # Ensures this is the file being ran
@@ -78,5 +91,7 @@ if __name__ == '__main__':  # Ensures this is the file being ran
         bot.load_extension(extension)  # Loads every extension.
 
 keep_alive()  # Starts a webserver to be pinged.
+# load_dotenv()
+# token = os.getenv("DISCORD_BOT_SECRET")
 token = os.environ.get("DISCORD_BOT_SECRET")
 bot.run(token)  # Starts the bot
