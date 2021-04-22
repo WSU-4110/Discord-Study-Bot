@@ -35,7 +35,7 @@ class MusicCommands(commands.Cog, name="Music Commands"):
         except discord.ClientException:
             pass
 
-        music_queue.MusicQueue.get_instance().add_url(url, guild.id)
+        music_queue.MusicQueue.get_instance().add_url(url, guild.id, ctx)
 
         voice = discord.utils.get(self.bot.voice_clients, guild=guild)
         if not voice.is_playing() or not config.server_playing_music[guild.id]:

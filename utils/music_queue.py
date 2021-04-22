@@ -1,11 +1,12 @@
 from collections import defaultdict as dd
+from typing import Tuple
 
 
 class MusicQueue:
     __instance = None
 
     def __init__(self):
-        self.items = dd(list)  # dict (key = server id, val is list)
+        self.items = dd(list)  # dict (key = server id, val is list of tuples)
         MusicQueue.__instance = self
 
     @staticmethod
@@ -15,10 +16,10 @@ class MusicQueue:
             MusicQueue()  # call init here
         return MusicQueue.__instance  # return the static instance
 
-    def add_url(self, url: str, server_id: int):
-        self.items[server_id].append(url)
+    def add_url(self, url: str, server_id: int, ctx):
+        self.items[server_id].append((url, ctx))
 
-    def get_top(self, server_id: int) -> str:
+    def get_top(self, server_id: int) -> Tuple:
         if self.items[server_id]:
             return self.items[server_id].pop(0)
 
