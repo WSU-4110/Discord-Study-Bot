@@ -20,20 +20,20 @@ class MusicCommands(commands.Cog, name="Music Commands"):
         """ Plays sounds with youtube video link """
 
         guild = ctx.guild
-        # file_name = f"song_{guild}.mp3"
-        #
-        # song_there = os.path.isfile(file_name)
-        # vc = ctx.author.voice
-        # if vc is None:
-        #     await EmbedFactory.error(ctx, "Not in a voice channel!")
-        #     return
-        #
-        # # ignores if already in voice channel because the bot can only
-        # # be in 1 voice call per server due to discords bot api limitations
-        # try:
-        #     await vc.channel.connect()
-        # except discord.ClientException:
-        #     pass
+        file_name = f"song_{guild}.mp3"
+
+        song_there = os.path.isfile(file_name)
+        vc = ctx.author.voice
+        if vc is None:
+            await EmbedFactory.error(ctx, "Not in a voice channel!")
+            return
+
+        # ignores if already in voice channel because the bot can only
+        # be in 1 voice call per server due to discords bot api limitations
+        try:
+            await vc.channel.connect()
+        except discord.ClientException:
+            pass
 
         music_queue.MusicQueue.get_instance().add_url(url, guild.id, ctx)
 
@@ -68,6 +68,7 @@ class MusicCommands(commands.Cog, name="Music Commands"):
         # else:
         #     pass
 
+    @commands.command()
     async def play_next_song(self, ctx, url):
         guild = ctx.guild
         file_name = f"song_{guild}.mp3"
@@ -102,7 +103,7 @@ class MusicCommands(commands.Cog, name="Music Commands"):
             }],
         }
         with youtube_dl.YoutubeDL(ydl_opts) as ydl:
-            ydl.download([music_queue.MusicQueue.get_instance().get_top(guild.id)])
+            ydl.download([url])
         for file in os.listdir("./"):
             if file.endswith(".mp3"):
                 os.rename(file, file_name)
