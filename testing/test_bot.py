@@ -129,3 +129,49 @@ def test_timer_pqueue_alarm_map():
 def test_timer_pqueue_peek():
     timer_priority_queue.TimerPriorityQueue.get_instance().peek = Mock(return_value=timer.Timer)  # https://realpython.com/python-mock-library/#configuring-your-mock
     assert timer_priority_queue.TimerPriorityQueue.get_instance().peek().__name__ == 'Timer'
+
+
+def test_create_note(driver: webdriver.Chrome):
+    driver.find_element_by_xpath(TEXT_INPUT_XPATH).send_keys(f'{BOT_PREFIX}!create-note test1' + Keys.RETURN)  # creating the note using command
+    time.sleep(REQUEST_WAIT_TIME)
+    messages = driver.find_element_by_xpath(MESSAGE_CONTAINER_XPATH).find_elements_by_class_name(TEXT_MESSAGE_CLASS)
+    message_text = messages[-1].find_element_by_class_name(EMBED_MESSAGE_CLASS).find_element_by_class_name(
+        EMBED_MESSAGE_TITLE_CLASS).text
+    assert message_text == 'Note Created!'  # checking if it matches
+
+
+def test_list_notes(driver: webdriver.Chrome):
+    driver.find_element_by_xpath(TEXT_INPUT_XPATH).send_keys(f'{BOT_PREFIX}!list-notes' + Keys.RETURN)  # listing notes command
+    time.sleep(REQUEST_WAIT_TIME)
+    messages = driver.find_element_by_xpath(MESSAGE_CONTAINER_XPATH).find_elements_by_class_name(TEXT_MESSAGE_CLASS)
+    message_text = messages[-1].find_element_by_class_name(EMBED_MESSAGE_CLASS).find_element_by_class_name(
+        EMBED_MESSAGE_TITLE_CLASS).text
+    assert message_text == 'Notes'  # checking if it matches
+
+
+def test_delete_note(driver: webdriver.Chrome):
+    driver.find_element_by_xpath(TEXT_INPUT_XPATH).send_keys(f'{BOT_PREFIX}!delete-note' + Keys.RETURN)  # creating the note using command
+    time.sleep(REQUEST_WAIT_TIME)
+    driver.find_element_by_xpath(TEXT_INPUT_XPATH).send_keys('1' + Keys.RETURN)
+    time.sleep(REQUEST_WAIT_TIME)
+    messages = driver.find_element_by_xpath(MESSAGE_CONTAINER_XPATH).find_elements_by_class_name(TEXT_MESSAGE_CLASS)
+    message_text = messages[-1].find_element_by_class_name(EMBED_MESSAGE_CLASS).find_element_by_class_name(
+        EMBED_MESSAGE_TITLE_CLASS).text
+    assert message_text == 'Note Deleted!'  # checking if it matches
+
+
+def test_curr_est_offset():
+    curr_est_offset()  # calling method
+    assert -4  # checking if it matches
+
+
+def test_orig_to_utc():
+    a_time = dt.datetime.now()
+    a_time_2 = orig_to_utc(a_time)
+    assert a_time_2 == dt.datetime.utcnow()  # checking if it matches
+
+
+def test_utc_to_dest():
+    a_time = dt.datetime.now()
+    a_time_2 = orig_to_utc(a_time)
+    assert utc_to_dest(a_time_2, 'EST') == a_time  # checking if it matches    
