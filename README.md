@@ -16,20 +16,20 @@ Nataly Arredondo ([nattapi](https://github.com/nattapi))</br>
 Syed Safwaan ([syed-safwaan](https://github.com/syed-safwaan))</br>
 Adi Sairamachandran ([AdiSai](https://github.com/AdiSai))</br>
 
-<b>Command features</b></br>
-## <b>Easter Egg Commands:</b></br>
+## <b>Command features</b></br>
+### <b>Easter Egg Commands:</b></br>
 ```
   8-ball                  Play magic 8-ball, answers to everything
   guessing-game           A game where you try to guess the number the bot ch...
   rock-paper-scissors     Play rock paper scissors against bot
 ```
-## <b>Inspire Commands:</b></br>
+### <b>Inspire Commands:</b></br>
 ```
   get-cs-motivation       Gets a CS motivation quote
   get-cs-satire           Gets a CS satirical quote
   get-some-inspiration    Gets a purely inspiring quote
 ```
-## <b>Music Commands:</b></br>
+### <b>Music Commands:</b></br>
 ```
   leave                   Bot disconnects from voice channel
   pause                   pauses music in voice channel
@@ -37,13 +37,13 @@ Adi Sairamachandran ([AdiSai](https://github.com/AdiSai))</br>
   resume                  resumes music in voice channel
   stop                    stops playing music (allows for song change)
 ```
-## <b>Notes Commands:</b></br>
+### <b>Notes Commands:</b></br>
 ```
   create-note             Creates a note.
   delete-note             Deletes a note.
   list-notes              Lists all available notes.
 ```
-## <b>Profile Commands:</b></br>
+### <b>Profile Commands:</b></br>
 ```
   change-timezone         Changes the user's saved timezone.
   display_score           Displays the user's participation scoreboard statis...
@@ -51,25 +51,25 @@ Adi Sairamachandran ([AdiSai](https://github.com/AdiSai))</br>
   send-feedback           Allows the user to send feedback to the developers ...
   userinfo                Displays the user's general information.
 ```
-## <b>Reminder Commands:</b></br>
+### <b>Reminder Commands:</b></br>
 ```
   set-infinite-reminder   (sir) Grabs user reminder data and pushes it to the...
   set-reminder            (sr) Grabs user reminder data and pushes it to the ...
   set-repetitive-reminder (srr) Grabs user reminder data and pushes it to the...
 ```
-## <b>Search Commands:</b></br>
+### <b>Search Commands:</b></br>
 ```
   big-search              Search google to get results
   search                  Search duckduckgo to get results
   search-site             Search duckduckgo to get results from specific site
 ```
-## <b>Ticket Commands:</b></br>
+### <b>Ticket Commands:</b></br>
 ```
   create-ticket           Initializes private ticket creation and setup.
   resolve-ticket          Resolves an existing ticket.
   setup-tickets           Initializes the Ticket category used for tickets in...
 ```
-## <b>Timed Commands:</b></br>
+### <b>Timed Commands:</b></br>
 ```
   highest-timer           Sends detailed Timer information for the top timer.
   list-timers             Lists all active timers created by the user.
@@ -78,12 +78,12 @@ Adi Sairamachandran ([AdiSai](https://github.com/AdiSai))</br>
   unset-highest-timer     Deletes the top timer for the user.
   unset-timer             Destroys Timer instance.
 ```
-## <b>ToDoList Commands:</b></br>
+### <b>ToDoList Commands:</b></br>
 ```
   create-item             Creates a todo item.
   todolist-queue          Sends information for all pending Timer instances.
 ```
-## <b>No Category:</b></br>
+### <b>No Category:</b></br>
 ```
   help                    Shows list of commands
 ```
