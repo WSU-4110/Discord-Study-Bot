@@ -56,23 +56,44 @@ def driver():
         chrome_options = Options()
         chrome_options.add_argument("--headless")
         chrome_options.add_argument("--no-sandbox")
-        driver = webdriver.Chrome(
-            options=chrome_options)  # initiate a headless webdriver instance through Selenium with no-sandbox
+        driver = webdriver.Chrome(options=chrome_options)  # initiate a headless webdriver instance through Selenium with no-sandbox
     else:
         driver = webdriver.Chrome()  # initiate a webdriver instance through Selenium
     driver.get('https://discord.com/app')  # go to Discord's login page
-    # enter email
-    driver.find_element_by_xpath(
-        '/html/body/div/div[2]/div/div[2]/div/div/form/div/div/div[1]/div[3]/div[1]/div/div[2]/input').send_keys(
-        DISCORD_EMAIL)
-    # enter password
-    driver.find_element_by_xpath(
-        '/html/body/div/div[2]/div/div[2]/div/div/form/div/div/div[1]/div[3]/div[2]/div/input').send_keys(
-        DISCORD_PASSWORD)
-    # click login button
-    driver.find_element_by_xpath(
-        '/html/body/div/div[2]/div/div[2]/div/div/form/div/div/div[1]/div[3]/button[2]').click()
-    time.sleep(REQUEST_WAIT_TIME)  # wait for request to process
+    def enter_credentials():
+        # enter email
+        driver.find_element_by_xpath(
+            '/html/body/div/div[2]/div/div[2]/div/div/form/div/div/div[1]/div[3]/div[1]/div/div[2]/input').send_keys(
+            DISCORD_EMAIL)
+        # enter password
+        driver.find_element_by_xpath(
+            '/html/body/div/div[2]/div/div[2]/div/div/form/div/div/div[1]/div[3]/div[2]/div/input').send_keys(
+            DISCORD_PASSWORD)
+        # click login button
+        driver.find_element_by_xpath(
+            '/html/body/div/div[2]/div/div[2]/div/div/form/div/div/div[1]/div[3]/button[2]').click()
+        time.sleep(LOAD_WAIT_TIME)  # wait for request to process
+    enter_credentials()
+    try:  # I AM HUMAN
+        # time.sleep(2 * LOAD_WAIT_TIME)
+        hCaptcha = '/html/body/div[1]/div[2]/div/section/div/div[3]/div'
+        driver.find_element_by_xpath(hCaptcha).click()
+        time.sleep(2 * LOAD_WAIT_TIME)
+        enter_credentials()
+    except:
+        pass
+    # enter 2fa via backup token
+    tokens = ['3sbw-z8sw', 'f0bp-v6fo', 'f7d9-riy1', 'fml8-tv9z', 'ydq1-q23r', 'zspb-ruzs']
+    token = tokens[0]
+    driver.find_element_by_xpath('/html/body/div/div[2]/div/div[2]/div/form/div/div[3]/div/div/input').send_keys(token)
+    # click login button (again)
+    driver.find_element_by_xpath('/html/body/div/div[2]/div/div[2]/div/form/div/div[3]/button[1]').click()
+    time.sleep(LOAD_WAIT_TIME)
+    try:  # sometimes we have to login again
+        print(driver.page_source)
+        enter_credentials()
+    except:
+        pass
     driver.get(UNIT_TEST_CHANNEL_URL)
     time.sleep(LOAD_WAIT_TIME)
     yield driver  # allow for tests to run
